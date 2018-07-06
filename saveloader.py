@@ -28,7 +28,7 @@ def load_variable(filename):
     :return: list of variables loaded from .pkl file
     '''
 
-    path = "./variables/" + filename
+    path = os.path.join("./variables", filename + ".pkl")
 
     with open(path) as f:
         var_list = pickle.load(f)
