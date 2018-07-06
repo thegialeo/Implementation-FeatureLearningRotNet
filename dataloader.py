@@ -10,4 +10,6 @@ def load_cifar(save_path):
     :param save_path: subdirectory, where the CIFAR10 dataset should be load from or downloaded to
     :return:
     '''
-    pass
+
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.49139968, 0.48215841, 0.44653091), \
+                                                                                (0.24703223, 0.24348513, 0.26158784))])
