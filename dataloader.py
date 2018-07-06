@@ -38,11 +38,11 @@ def make_dataloaders(trainset, testset, valid_size, batch_size):
     train_idx = indices[:len(indices) - valid_size]
     valid_idx = indices[len(indices) - valid_size:]
 
-    trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, shuffle=True, \
-                                              sampler=torch.utils.data.DataLoader.SubsetRandomSampler(train_idx))
+    trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, \
+                                              sampler=torch.utils.data.sampler.SubsetRandomSampler(train_idx))
 
     validloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, \
-                                              sampler=torch.utils.data.DataLoader.SubsetRandomSampler(valid_idx))
+                                              sampler=torch.utils.data.sampler.SubsetRandomSampler(valid_idx))
 
     testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=batch_size)
 
