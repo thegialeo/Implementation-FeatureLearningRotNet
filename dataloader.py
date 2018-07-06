@@ -25,13 +25,13 @@ def load_cifar(save_path):
 
 def make_dataloaders(trainset, testset, train_size, valid_size, batchsize):
     '''
+    Create loaders for the train-, validation- and testset.
 
-
-    :param trainset:
-    :param testset:
-    :param train_size:
-    :param valid_size:
-    :param batchsize:
-    :return:
+    :param trainset: trainset for which a train loader and valication loader will be created
+    :param testset: testset for which we want to create a test loader
+    :param train_size: size of the dataset wrapped by the trainloader
+    :param valid_size: size of the dataset wrapped by the validation loader
+    :param batchsize: size of the batch the loader will load during training
+    :return: trainloader, volidloader, testloader
     '''
     pass
