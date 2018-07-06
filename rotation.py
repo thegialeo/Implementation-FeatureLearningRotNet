@@ -81,7 +81,11 @@ def create_rot_batch(images, labels, rot=['90', '180', '270']):
     :param images: images of a mini-batch to rotate
     :param labels: labels corresponding to the images
     :param rot: list of rotations that should be added to the mini-batch. Possible rotations are: '90', '180' and '270'
-    :return:
+    :return: rot_batch: original mini-batch with the rotated images added, class_labels: corresponding labels for the
+    classification task, rot_labels: corresponding labels for the rotation task
+
     '''
 
-    return
+    return rot_batch, class_labels, rot_labels
+
+

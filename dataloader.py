@@ -9,7 +9,7 @@ def load_cifar(save_path):
     Returns trainset, testset and classes of CIFAR10. Applied transformations: ToTensor() and normalization.
 
     :param save_path: subdirectory, where the CIFAR10 dataset should be load from or downloaded to
-    :return: trainset, testset, classes
+    :return: trainset, testset, classes of CIFAR10
     '''
 
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.49139968, 0.48215841, 0.44653091), \
