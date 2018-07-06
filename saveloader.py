@@ -1,4 +1,6 @@
 import pickle
+import os
+import sys
 
 
 def save_variable(var_list, filename):
@@ -10,7 +12,11 @@ def save_variable(var_list, filename):
     :return: None
     '''
 
-    with open(filename, 'w') as f:
+    subdir = "./variables"
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+
+    with open(os.path.join(subdir, filename + ".pkl"), 'w') as f:
         pickle.dump(var_list, f)
 
 
@@ -22,7 +28,9 @@ def load_variable(filename):
     :return: list of variables loaded from .pkl file
     '''
 
-    with open(filename) as f:
+    path = "./variables/" + filename
+
+    with open(path) as f:
         var_list = pickle.load(f)
 
     return var_list
