@@ -69,3 +69,19 @@ def apply(func, M):
     res = torch.stack(tList, dim=0)
 
     return res
+
+
+def create_rot_batch(images, labels, rot=['90', '180', '270']):
+    '''
+    Takes a mini-batch of images with the corresponding labels and adds rotated versions of the images to the
+    mini-batch. The original labels are modified accordingly to fit the newly create mini-batch. Furthermore, the
+    corresponding rotation labels are created for the new mini-batch. By default all 3 rotations (90, 180 and
+    270 degree) will be added, leading to a 4 times bigger new mini-batch.
+
+    :param images: images of a mini-batch to rotate
+    :param labels: labels corresponding to the images
+    :param rot: list of rotations that should be added to the mini-batch. Possible rotations are: '90', '180' and '270'
+    :return:
+    '''
+
+    return
