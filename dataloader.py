@@ -23,7 +23,7 @@ def load_cifar(save_path):
     return trainset, testset, classes
 
 
-def make_dataloaders(trainset, testset, train_size, valid_size, batchsize):
+def make_dataloaders(trainset, testset, train_size, valid_size, batch_size):
     '''
     Create loaders for the train-, validation- and testset.
 
@@ -32,6 +32,19 @@ def make_dataloaders(trainset, testset, train_size, valid_size, batchsize):
     :param train_size: size of the dataset wrapped by the trainloader
     :param valid_size: size of the dataset wrapped by the validation loader
     :param batchsize: size of the batch the loader will load during training
-    :return: trainloader, volidloader, testloader
+    :return: trainloader, validloader, testloader
     '''
-    pass
+
+    indices = torch.randperm(len(trainset))
+    train_idx = indices[:len(indices) - valid_size]
+    valid_idx = indices[len(indices) - valid_size:]
+
+    trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, shuffle=True, \
+                                              sampler=torch.utils.data.DataLoader.SubsetRandomSampler(train_idx))
+
+    validloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, \
+                                              sampler=torch.utils.data.DataLoader.SubsetRandomSampler(valid_idx))
+
+    testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=batch_size)
+
+    return trainloader, validloader, testloader
