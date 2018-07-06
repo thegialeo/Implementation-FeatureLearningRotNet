@@ -36,3 +36,21 @@ def rot180(image):
     rot_im = vert_im.index_select(1, hor_idx)
 
     return rot_im
+
+
+def rot270(image):
+    '''
+    Rotate an image by 270 degree by first flipping the image vertically and then transposing it.
+
+    :param image: The image that should be rotated.
+    :return: The rotated image
+    '''
+
+    # flip vertically
+    vert_idx = torch.range(image.size(2) - 1, 0, -1).long()
+    vert_im = image.index_select(2, vert_idx)
+
+    # transpose
+    rot_im = vert_im.permute(0, 2, 1)
+
+    return rot_im
