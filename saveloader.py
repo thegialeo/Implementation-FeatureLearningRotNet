@@ -1,6 +1,5 @@
 import pickle
 import os
-import sys
 
 
 def save_variable(var_list, filename):
