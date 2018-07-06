@@ -2,6 +2,7 @@ import torch
 import torchvision.datasets as datasets
 import torchvision.transforms as transforms
 
+
 def load_cifar(save_path):
     '''
     Check if the CIFAR10 dataset already exists in the directory "save path". If not, the CIFAR10 dataset is downloaded.
@@ -21,3 +22,16 @@ def load_cifar(save_path):
 
     return trainset, testset, classes
 
+
+def make_dataloaders(trainset, testset, train_size, valid_size, batchsize):
+    '''
+
+
+    :param trainset:
+    :param testset:
+    :param train_size:
+    :param valid_size:
+    :param batchsize:
+    :return:
+    '''
+    pass
