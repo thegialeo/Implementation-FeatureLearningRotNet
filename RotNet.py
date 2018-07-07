@@ -42,5 +42,9 @@ class RotNet(nn.Module):
         if num_conv_block > 3 and add_avg_pool:
             blocks[2].add_module('Block3_AvgPool', nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
 
+        # add generic blocks, if more than 3 convolutional blocks (no pooling)
+        for block in range(3, num_conv_block):
+            blocks[block].add_module('Block{}_Conv'.format(block+1), cb.conv_block(192, 192, 192, 192, 3, 1, 1))
+
 
 
