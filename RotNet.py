@@ -1,5 +1,4 @@
 import torch.nn as nn
-import BasicBlock as bb
 import ConvBlock as cb
 import GlobalAveragePooling as pool
 
@@ -27,5 +26,12 @@ class RotNet(nn.Module):
         super(RotNet, self).__init__()
 
         blocks = [nn.Sequential() for i in range(num_conv_block)]
+
+        # convolutional block 1
+        blocks[0].add_module('Block1_Conv', cb.conv_block(in_channels, 192, 160, 96, 5, 1, 1))
+        blocks[0].add_module('Block1_MaxPool', nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
+
+        # convolutional block 2
+        
 
 
