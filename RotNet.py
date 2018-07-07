@@ -73,6 +73,18 @@ class RotNet(nn.Module):
         return out_feat_keys, max_out_feat
 
 
-    
+    def forward(self, x, out_feat_keys=None):
+        '''
+        Forward an image 'x' through the RotNet and return the asked output features.
+
+        :param x: input image that should be forwarded through the RotNet
+        :param out_feat_keys: list/tuple with feature names of features that should be returned. Default: return the
+        highest feature
+        :return: If multiple output feature were asked then a list of output features is returned in the same order as
+        in 'out_feat_keys'. If a single output feature was asked then that one output feature is returned (not as a
+        list).
+        '''
+
+        
 
 

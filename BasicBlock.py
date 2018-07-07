@@ -31,7 +31,7 @@ class basic_block(nn.Module):
         '''
         Forward an image 'x' through the Basic Block and return the output.
 
-        :param x: image that should be forwarded through the Basic Block
+        :param x: input image that should be forwarded through the Basic Block
         :return: result of forwarding the image through the Basic Block
         '''
 
