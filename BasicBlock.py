@@ -16,6 +16,7 @@ class basic_block(nn.Module):
         :param out_channels: number of channels produced by the convolution layer
         :param kernel_size: size of the convolving kernel
         '''
+
         super(basic_block, self).__init__()
 
         padding = (kernel_size - 1) / 2
@@ -27,4 +28,11 @@ class basic_block(nn.Module):
 
 
     def forward(self, x):
+        '''
+        Forward an image 'x' through the Basic Block and return the output.
+
+        :param x: image that should be forwarded through the Basic Block
+        :return: result of forwarding the image through the Basic Block
+        '''
+
         return self.layers(x)
