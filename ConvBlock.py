@@ -10,6 +10,18 @@ class conv_block(nn.Module):
 
     def __init__(self, in_channels, out_channels_block1, out_channels_block2, out_channels_block3, kernel_size_block1, \
                  kernel_size_block2, kernel_size_block3):
+        '''
+        Initialize a convolutional block object.
+
+        :param in_channels: number of channels in the input image
+        :param out_channels_block1: number of channels produced by the convolution of the Basic Block 1
+        :param out_channels_block2: number of channels produced by the convolution of the Basic Block 2
+        :param out_channels_block3: number of channels produced by the convolution of the Basic Block 3
+        :param kernel_size_block1: size of the convolving kernel for the Basic Block 1
+        :param kernel_size_block2: size of the convolving kernel for the Basic Block 2
+        :param kernel_size_block3: size of the convolving kernel for the Basic Block 3
+        '''
+
         super(conv_block, self).__init__()
 
         self.layers = nn.Sequential()
