@@ -95,15 +95,21 @@ def create_rot_batch(images, labels, rot=['90', '180', '270']):
         images_rot90 = apply(rot90, images)
         rot_batch = torch.cat((rot_batch, images_rot90), 0)
         class_labels = torch.cat((class_labels, labels), 0)
-        rot_labels = torch.cat((rot_labels, torch.ones(len(images) * counter)), 0)
+        rot_labels = torch.cat((rot_labels, torch.ones(len(images)) * counter), 0)
         counter += 1
 
     if '180' in rot:
         images_rot180 = apply(rot180, images)
         rot_batch = torch.cat((rot_batch, images_rot180), 0)
         class_labels = torch.cat((class_labels, labels), 0)
-        rot_labels = torch.cat((rot_labels, torch.ones(len(images) * counter)), 0)
+        rot_labels = torch.cat((rot_labels, torch.ones(len(images)) * counter), 0)
         counter += 1
+
+    if '270' in rot:
+        images_rot270 = apply(rot270, images)
+        rot_batch = torch.cat((rot_batch, images_rot270), 0)
+        class_labels = torch.cat((class_labels, labels), 0)
+        rot_labels = torch.cat((rot_labels, torch.ones(len(images)) * counter), 0)
 
     return rot_batch, class_labels, rot_labels
 
