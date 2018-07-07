@@ -46,5 +46,12 @@ class RotNet(nn.Module):
         for block in range(3, num_conv_block):
             blocks[block].add_module('Block{}_Conv'.format(block+1), cb.conv_block(192, 192, 192, 192, 3, 1, 1))
 
+        # add global average pooling + linear classifier layer
+        blocks.append(nn.Sequential())
+        blocks[-1].add_module('GlobalAveragePooling', pool.GlobalAveragePooling())
+        blocks[-1].add_module('Classifier', nn.Linear(192,num_classes))
+
+        
+
 
 
