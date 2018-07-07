@@ -111,5 +111,3 @@ def create_rot_batch(images, labels, rot=['90', '180', '270']):
         rot_labels = torch.cat((rot_labels, torch.ones(len(images)) * counter), 0)
 
     return rot_batch, class_labels, rot_labels
-
-
