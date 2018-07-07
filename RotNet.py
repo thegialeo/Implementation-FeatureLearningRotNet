@@ -51,7 +51,13 @@ class RotNet(nn.Module):
         blocks[-1].add_module('GlobalAveragePooling', pool.GlobalAveragePooling())
         blocks[-1].add_module('Classifier', nn.Linear(192,num_classes))
 
-        
+        # create name structures for the network
+        self._feature_blocks = nn.ModuleList(blocks)
+        self.all_feat_names = ['conv{}'.format(block + 1) for block in range(num_conv_blocks)] + ['classifier', ]
+
+
+    def output_feature(self):
+        pass
 
 
 
