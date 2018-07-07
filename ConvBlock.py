@@ -31,4 +31,11 @@ class conv_block(nn.Module):
 
 
     def forward(self, x):
+        '''
+        Forward an image 'x' through the convolutional block and return the output.
+
+        :param x: image that should be forwarded through the convolutional block
+        :return: result of forwarding the image through the convolutional block
+        '''
+
         return self.layers(x)
