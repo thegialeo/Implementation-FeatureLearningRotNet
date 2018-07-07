@@ -85,6 +85,19 @@ class RotNet(nn.Module):
         list).
         '''
 
-        
+        out_feat_keys, max_out_feat = self.find_highest_feature(out_feat_keys)
+
+        out_feats = [None] * len(out_feat_keys)
+
+        feat = x
+        for i in range(max_out_feat + 1):
+            feat = self._feature_blocks[i](feat)
+            key = self.all_feat_names[i]
+            if key in out_feat_keys:
+                out_feats[out_feat_keys.index(key)] = feat
+
+        out_feats = out_feats[0] if len(out_feats) == 1 else out_feats
+
+        return out_feats
 
 
