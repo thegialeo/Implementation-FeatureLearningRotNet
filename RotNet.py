@@ -14,3 +14,18 @@ class RotNet(nn.Module):
     '''
 
 
+    def __init__(self, num_classes, num_conv_block=3, in_channels=3, avg_pool3=True):
+        '''
+        Initialize a RotNet object.
+
+        :param num_classes: number of classes in the classification task
+        :param num_conv_block: number of convolutional blocks (has to be at least 3 or more). Default: 3
+        :param in_channels: number of channels in the input image. Default: 3
+        :param avg_pool3: apply additional average pooling between convolutional block 3 and 4. Default: True
+        '''
+
+        super(RotNet, self).__init__()
+
+        blocks = [nn.Sequential() for i in range(num_conv_block)]
+
+
