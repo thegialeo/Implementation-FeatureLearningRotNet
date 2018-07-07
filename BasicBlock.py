@@ -9,6 +9,13 @@ class basic_block(nn.Module):
 
 
     def __init__(self, in_channels, out_channels, kernel_size):
+        '''
+        Initialize a Basic Block object.
+
+        :param in_channels: number of channels in the input image
+        :param out_channels: number of channels produced by the convolution layer
+        :param kernel_size: size of the convolving kernel
+        '''
         super(basic_block, self).__init__()
 
         padding = (kernel_size - 1) / 2
