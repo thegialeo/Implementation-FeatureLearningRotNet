@@ -32,6 +32,10 @@ class RotNet(nn.Module):
         blocks[0].add_module('Block1_MaxPool', nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
 
         # convolutional block 2
-        
+        blocks[1].add_module('Block2_Conv', cb.conv_block(96, 196, 192, 192, 5, 1, 1))
+        blocks[1].add_module('Block2_AvgPool', nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
+
+        # convolutional block 3
+        blocks[2].add_module('Block3_Conv', cb.conv_block(192, 192, 192, 192, 3, 1, 1))
 
 
