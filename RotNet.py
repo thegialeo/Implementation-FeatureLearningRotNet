@@ -56,8 +56,15 @@ class RotNet(nn.Module):
         self.all_feat_names = ['conv{}'.format(block + 1) for block in range(num_conv_blocks)] + ['classifier', ]
 
 
-    def output_feature(self):
-        pass
+    def find_highest_feature(self, out_feat_keys):
+        '''
+        Finds the highest output feature in out_feat_keys. Default: return the name of the feature output of the last
+        layer.
+
+        :param out_feat_keys: list of feature names. Possible feature names are: 'conv1', 'conv2', ..., 'convX',
+        'classifier' with X = number of convolutional blocks in the network
+        :return: out_feat_keys and max_out_feat (the name of the highest output feature in out_feat_keys)
+        '''
 
 
 
