@@ -13,7 +13,7 @@ class RotNet(nn.Module):
     '''
 
 
-    def __init__(self, num_classes, num_conv_block=3, in_channels=3, avg_pool3=True):
+    def __init__(self, num_classes, num_conv_block=3, in_channels=3, add_avg_pool=True):
         '''
         Initialize a RotNet object.
 
@@ -37,5 +37,10 @@ class RotNet(nn.Module):
 
         # convolutional block 3
         blocks[2].add_module('Block3_Conv', cb.conv_block(192, 192, 192, 192, 3, 1, 1))
+
+        # optional average pooling
+        if num_conv_block > 3 and add_avg_pool:
+            blocks[2].add_module('Block3_AvgPool', nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
+
 
 
