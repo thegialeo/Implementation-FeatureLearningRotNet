@@ -101,3 +101,12 @@ class RotNet(nn.Module):
         return out_feats
 
 
+    def weight_init(self):
+        '''
+
+        :param self:
+        :return:
+        '''
+        pass
+
+
