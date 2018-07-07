@@ -4,9 +4,13 @@ import torch.nn.functional as F
 
 
 class GlobalAveragePooling(nn.Module):
+    '''
+    Custom layer for global average pooling (GAP).
+    '''
 
 
     def __init__(self):
+
         super(GlobalAveragePooling, self).__init__()
 
 
