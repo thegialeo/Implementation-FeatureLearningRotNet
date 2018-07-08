@@ -103,9 +103,7 @@ class RotNet(nn.Module):
 
     def weight_init(self):
         '''
-
-        :param self:
-        :return:
+        Initialize the weights for all layers.
         '''
         pass
 
