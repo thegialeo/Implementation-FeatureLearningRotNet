@@ -53,7 +53,7 @@ class RotNet(nn.Module):
 
         # create name structures for the network
         self._feature_blocks = nn.ModuleList(blocks)
-        self.all_feat_names = ['conv{}'.format(block + 1) for block in range(num_conv_blocks)] + ['classifier', ]
+        self.all_feat_names = ['conv{}'.format(block + 1) for block in range(num_conv_block)] + ['classifier', ]
 
 
     def find_highest_feature(self, out_feat_keys):
