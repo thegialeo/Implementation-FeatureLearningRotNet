@@ -103,8 +103,19 @@ class RotNet(nn.Module):
 
     def weight_init(self):
         '''
-        Initialize the weights for all layers.
+        Initialize the weights for all layers of the RotNet.
         '''
-        pass
 
-
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d):
+                if module.weight.requires_grad:
+                    n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
+                    module.weight.data.normal_(0, math.sqrt(2. / n))
+            elif isinstance(module, nn.BatchNorm2d):
+                if module.weight.requires_grad:
+                    module.weight.data.fill_(1)
+                if module.bias.requires_grad:
+                    module.bias.data.zero_()
+            elif isinstance(module, nn.Linear):
+                if module.bias.requires_grad:
+                    module.bias.data.zero()
