@@ -7,23 +7,23 @@ import GlobalAveragePooling as pool
 
 
 class RotNet(nn.Module):
-    '''
+    """
     The RotNet model consists of 3, 4 or 5 convolutional blocks. Furthermore, max pooling is applied between
     convolutional block 1 and 2, average pooling is applied between convolutional block 2 and 3 (optional:
     additionally applied between convolutional block 3 and 4). The convolutional blocks are followed by global average
     pooling and a linear classifier for the rotation task.
-    '''
+    """
 
 
     def __init__(self, num_classes, num_conv_block=3, in_channels=3, add_avg_pool=True):
-        '''
+        """
         Initialize a RotNet object.
 
         :param num_classes: number of classes in the classification task
         :param num_conv_block: number of convolutional blocks (has to be at least 3 or more). Default: 3
         :param in_channels: number of channels in the input image. Default: 3
         :param avg_pool3: apply additional average pooling between convolutional block 3 and 4. Default: True
-        '''
+        """
 
         super(RotNet, self).__init__()
 
@@ -59,14 +59,14 @@ class RotNet(nn.Module):
 
 
     def find_highest_feature(self, out_feat_keys):
-        '''
+        """
         Finds the highest output feature name in out_feat_keys. Default: return the name of the feature output of the
         last layer. (Here, highest output feature means: The "deepest" feature map "farthest" away from the input)
 
         :param out_feat_keys: list of feature names. Possible feature names are: 'conv1', 'conv2', ..., 'convX',
         'classifier' with X = number of convolutional blocks in the network
         :return: out_feat_keys and max_out_feat (the name of the highest output feature in out_feat_keys)
-        '''
+        """
 
         out_feat_keys = [self.all_feat_names[-1],] if out_feat_keys is None else out_feat_keys
 
@@ -76,7 +76,7 @@ class RotNet(nn.Module):
 
 
     def forward(self, x, out_feat_keys=None):
-        '''
+        """
         Forward an image 'x' through the RotNet and return the asked output features.
 
         :param x: input image that should be forwarded through the RotNet
@@ -85,7 +85,7 @@ class RotNet(nn.Module):
         :return: If multiple output feature were asked then a list of output features is returned in the same order as
         in 'out_feat_keys'. If a single output feature was asked then that one output feature is returned (not as a
         list).
-        '''
+        """
 
         out_feat_keys, max_out_feat = self.find_highest_feature(out_feat_keys)
 
@@ -104,9 +104,9 @@ class RotNet(nn.Module):
 
 
     def weight_init(self):
-        '''
+        """
         Initialize the weights for all layers of the RotNet.
-        '''
+        """
 
         for module in self.modules():
             if isinstance(module, nn.Conv2d):

@@ -23,7 +23,7 @@ def accuracy_from_paper(output, target, topk=(1,)):
 
 
 def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_block_num=None, use_paper_metric=False):
-    '''
+    """
     Compute the accuracy of a neural network on a test or evaluation set wrapped by a loader.
 
     Optional: If rot is provided, the rotation prediction task is tested instead of the classification task (neural
@@ -45,7 +45,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
     :return: accuracy
-    '''
+    """
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -99,7 +99,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
 
 def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=True, classifier=None, \
                        conv_block_num=None, use_paper_metric=False):
-    '''
+    """
     Computes the accuracy of a neural network for every class on a test or evaluation set wrapped by a loader.
 
     Optional: If rot is provided, the rotation prediction task is tested instead of the classification task (neural
@@ -123,4 +123,5 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
     :return:
-    '''
+    """
+

@@ -3,14 +3,14 @@ import BasicBlock as bb
 
 
 class conv_block(nn.Module):
-    '''
+    """
     A convolutional block consists of 3 Basic Blocks.
-    '''
+    """
 
 
     def __init__(self, in_channels, out_channels_block1, out_channels_block2, out_channels_block3, kernel_size_block1, \
                  kernel_size_block2, kernel_size_block3):
-        '''
+        """
         Initialize a convolutional block object.
 
         :param in_channels: number of channels in the input image
@@ -20,7 +20,7 @@ class conv_block(nn.Module):
         :param kernel_size_block1: size of the convolving kernel for the Basic Block 1
         :param kernel_size_block2: size of the convolving kernel for the Basic Block 2
         :param kernel_size_block3: size of the convolving kernel for the Basic Block 3
-        '''
+        """
 
         super(conv_block, self).__init__()
 
@@ -31,11 +31,11 @@ class conv_block(nn.Module):
 
 
     def forward(self, x):
-        '''
+        """
         Forward an image 'x' through the convolutional block and return the output.
 
         :param x: input image that should be forwarded through the convolutional block
         :return: result of forwarding the image through the convolutional block
-        '''
+        """
 
         return self.layers(x)

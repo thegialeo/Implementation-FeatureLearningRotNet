@@ -4,13 +4,13 @@ import torchvision.transforms as transforms
 
 
 def load_cifar(save_path):
-    '''
+    """
     Check if the CIFAR10 dataset already exists in the directory "save path". If not, the CIFAR10 dataset is downloaded.
     Returns trainset, testset and classes of CIFAR10. Applied transformations: ToTensor() and normalization.
 
     :param save_path: subdirectory, where the CIFAR10 dataset should be load from or downloaded to
     :return: trainset, testset, classes of CIFAR10
-    '''
+    """
 
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.49139968, 0.48215841, 0.44653091), \
                                                                                 (0.24703223, 0.24348513, 0.26158784))])
@@ -24,7 +24,7 @@ def load_cifar(save_path):
 
 
 def make_dataloaders(trainset, testset, valid_size, batch_size):
-    '''
+    """
     Create loaders for the train-, validation- and testset.
 
     :param trainset: trainset for which a train loader and valication loader will be created
@@ -32,7 +32,7 @@ def make_dataloaders(trainset, testset, valid_size, batch_size):
     :param valid_size: size of the dataset wrapped by the validation loader
     :param batchsize: size of the batch the loader will load during training
     :return: trainloader, validloader, testloader
-    '''
+    """
 
     indices = torch.randperm(len(trainset))
     train_idx = indices[:len(indices) - valid_size]
