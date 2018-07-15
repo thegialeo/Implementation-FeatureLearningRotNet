@@ -54,9 +54,18 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
             images, labels = data
             net.to(device)
             if rot == None:
+                images, labels = images.to(device), labels.to(device)
                 if classifier == None:
-                    images, labels = images.to(device), labels.to(device)
                     outputs = net(images)
+                    if use_paper_metric:
+                        accuracy = accuracy_from_paper(outputs, labels)[0].item()
+                    else:
+                        _, predicted = torch.max(outputs.data, 1)
+                        total += labels.size(0)
+                        correct += (predicted == labels).sum().item()
+                else:
+                    feats = net(images, out_feat_keys=[net.all_feat_names[conv_block_num]])
+                    outputs = classifier(feats)
                     if use_paper_metric:
                         accuracy = accuracy_from_paper(outputs, labels)[0].item()
                     else:
