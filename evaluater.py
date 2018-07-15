@@ -54,9 +54,30 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
             images, labels = data
             net.to(device)
             if rot == None:
-                pass
+                if classifier == None:
+                    images, labels = images.to(device), labels.to(device)
+                    outputs = net(images)
+                    if use_paper_metric:
+                        accuracy = accuracy_from_paper(outputs, labels)[0].item()
+                    else:
+                        _, predicted = torch.max(outputs.data, 1)
+                        total += labels.size(0)
+                        correct += (predicted == labels).sum().item()
             else:
                 rot_images, class_labels, rot_labels = rtt.create_rot_batch(images, labels, rot=rot)
                 rot_images, rot_labels = rot_images.to(device), rot_labels.to(device)
                 outputs = net(rot_images)
-                if 
+                if use_paper_metric:
+                    accuracy = accuracy_from_paper(outputs, rot_labels)[0].item()
+                else:
+                    _, predicted = torch.max(outputs.data, 1)
+                    total += rot_labels.size(0)
+                    correct += (predicted == rot_labels.long()).sum().item()
+
+    if not use_paper_metric:
+        accuracy = 100.0 * correct / total
+
+    if printing:
+        print('Accuracy: {:, .3f} %'.format(accuracy))
+
+    return accuracy
