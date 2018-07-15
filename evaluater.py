@@ -24,10 +24,13 @@ def accuracy_from_paper(output, target, topk=(1,)):
 
 def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_block_num=None, use_paper_metric=False):
     '''
-    Compute the accuracy of a neural network on a test or evaluation set wrapped by a loader. Optional: If rot is
-    provided, the rotation prediction task is tested instead of the classification task (neural network is used for
-    testing). Optional: If a classifier and conv_block_num is provided, the classifier is attached to the feature map of
-    the x-th convolutional block of the neural network (where x = conv_block_num + 1) and tested on dataset wrapped by
+    Compute the accuracy of a neural network on a test or evaluation set wrapped by a loader.
+
+    Optional: If rot is provided, the rotation prediction task is tested instead of the classification task (neural
+    network is used for testing).
+
+    Optional: If a classifier and conv_block_num is provided, the classifier is attached to the feature map of
+    the x-th convolutional block of the neural network (where x = conv_block_num) and tested on dataset wrapped by
     the loader.
 
     :param loader: loader that wraps the test or evaluation dataset
@@ -36,15 +39,17 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
     provided the neural network will be tested for the rotation task instead of the classification task.
     :param printing: if True, the accuracy will be additionally printed to the console
     :param classifier: optional argument, if provided, the classifier will be attached to the feature map of the x-th
-    convolutional block of the neural network (where x = conv_block_num + 1) and tested on dataset wrapped by the
+    convolutional block of the neural network (where x = conv_block_num) and tested on dataset wrapped by the
     loader.
-    :param conv_block_num: convolutional block of the RotNet minus 1 to which the classifier should be attached to
+    :param conv_block_num: number of the RotNet convolutional block to which the classifier will be attached
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
     :return: accuracy
     '''
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    conv_block_num -= 1
 
     correct = 0.0
     total = 0.0
@@ -90,3 +95,32 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
         print('Accuracy: {:, .3f} %'.format(accuracy))
 
     return accuracy
+
+
+def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=True, classifier=None, \
+                       conv_block_num=None, use_paper_metric=False):
+    '''
+    Computes the accuracy of a neural network for every class on a test or evaluation set wrapped by a loader.
+
+    Optional: If rot is provided, the rotation prediction task is tested instead of the classification task (neural
+    network is used for testing).
+
+    Optional: If a classifier and conv_block_num is provided, the classifier is attached to the feature map of
+    the x-th convolutional block of the neural network (where x = conv_block_num) and tested on dataset wrapped by
+    the loader.
+
+    :param num_class: number of total classes in the classification task
+    :param loader: loader that wraps the test or evaluation dataset
+    :param net: the neural network that should be tested
+    :param class_names: list of class names corresponding the labels
+    :param rot: list of classes for the rotation task. Possible classes are: '90', '180', '270'. Optional argument, if
+    provided the neural network will be tested for the rotation task instead of the classification task.
+    :param printing: if True, the accuracies will be additionally printed to the console
+    :param classifier: ptional argument, if provided, the classifier will be attached to the feature map of the x-th
+    convolutional block of the neural network (where x = conv_block_num) and tested on dataset wrapped by the
+    loader.
+    :param conv_block_num: number of the RotNet convolutional block to which the classifier will be attached
+    :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
+    Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :return:
+    '''
