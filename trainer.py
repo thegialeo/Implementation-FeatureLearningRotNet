@@ -1,4 +1,4 @@
-import torch.nn as nn
+import torch
 import rotation as rtt
 import evaluater as eva
 
@@ -49,9 +49,9 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
         running_loss = 0.0
         for i, data in enumerate(trainloader, 0):
             inputs, labels = data
-            if rot == None:
+            if rot is None:
                 inputs, labels = inputs.to(device), labels.to(device)
-                if classifier == None:
+                if classifier is None:
                     optimizer.zero_grad()
                     outputs = net(inputs)
                     loss = criterion(outputs, labels)
@@ -72,4 +72,30 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
                 loss = criterion(outputs, rot_labels.long())
                 loss.backward()
                 optimizer.step()
+
+            # print statistics
+            running_loss += loss.item()
+            if i % 60 == 59:
+                print('[{}, {}] loss: {:.3f}'.format(epoch + 1, i + 1, running_loss / 60))
+                running_loss = 0.0
+
+        # epoch loss
+        loss_log.append(loss)
+        print("Epoch: {} -> Loss: {}".format(epoch + 1, loss))
+
+        # epoch validation accuracy
+        accuracy = eva.get_accuracy(validloader, net, rot=rot, printing=False, classifier=classifier,
+                                    conv_block_num=conv_block_num, use_paper_metric=use_paper_metric)
+        accuracy_log.append(accuracy)
+        print("Epoch: {} -> Evaluation Accuracy: {}".format(epoch + 1, accuracy))
+
+        # save best model
+        if accuracy >= max_accuracy:
+            best_epoch = epoch + 1
+            max_accuracy = accuracy
+            if rot == None:
+                if classifier == None:
+                    torch.save(net.state_dict(), 'models/RotNet_classification_{}')
+            else:
+                torch.save(net.state_dict(), 'models/RotNet_rotation_{}'.format(best_epoch))
 

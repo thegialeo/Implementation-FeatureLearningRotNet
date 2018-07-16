@@ -61,9 +61,9 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
         for data in loader:
             images, labels = data
             net.to(device)
-            if rot == None:
+            if rot is None:
                 images, labels = images.to(device), labels.to(device)
-                if classifier == None:
+                if classifier is None:
                     outputs = net(images)
                     if use_paper_metric:
                         tmp_accuracy = accuracy_from_paper(outputs, labels)[0].item()
@@ -144,9 +144,9 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
         for data in loader:
             images, labels = data
             net.to(device)
-            if rot == None:
+            if rot is None:
                 images, labels = images.to(device), labels.to(device)
-                if classifier == None:
+                if classifier is None:
                     outputs = net(images)
                     _, predicted = torch.max(outputs, 1)
                     c = (predicted == labels).squeeze()
