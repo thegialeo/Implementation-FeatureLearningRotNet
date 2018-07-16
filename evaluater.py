@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 import rotation as rtt
 
 
@@ -54,6 +55,9 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
     correct = 0.0
     total = 0.0
 
+    if use_paper_metric:
+        accuracy_lst = []
+
     with torch.no_grad():
         for data in loader:
             images, labels = data
@@ -63,7 +67,8 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
                 if classifier == None:
                     outputs = net(images)
                     if use_paper_metric:
-                        accuracy = accuracy_from_paper(outputs, labels)[0].item()
+                        tmp_accuracy = accuracy_from_paper(outputs, labels)[0].item()
+                        accuracy_lst.append(tmp_accuracy)
                     else:
                         _, predicted = torch.max(outputs.data, 1)
                         total += labels.size(0)
@@ -72,7 +77,8 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
                     feats = net(images, out_feat_keys=[net.all_feat_names[conv_block_num]])
                     outputs = classifier(feats)
                     if use_paper_metric:
-                        accuracy = accuracy_from_paper(outputs, labels)[0].item()
+                        tmp_accuracy = accuracy_from_paper(outputs, labels)[0].item()
+                        accuracy_lst.append(tmp_accuracy)
                     else:
                         _, predicted = torch.max(outputs.data, 1)
                         total += labels.size(0)
@@ -82,13 +88,16 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
                 rot_images, rot_labels = rot_images.to(device), rot_labels.to(device)
                 outputs = net(rot_images)
                 if use_paper_metric:
-                    accuracy = accuracy_from_paper(outputs, rot_labels)[0].item()
+                    tmp_accuracy = accuracy_from_paper(outputs, rot_labels)[0].item()
+                    accuracy_lst.append(tmp_accuracy)
                 else:
                     _, predicted = torch.max(outputs.data, 1)
                     total += rot_labels.size(0)
                     correct += (predicted == rot_labels.long()).sum().item()
 
-    if not use_paper_metric:
+    if use_paper_metric:
+        accuracy = sum(accuracy_lst) / float(len(accuracy_lst))
+    else:
         accuracy = 100.0 * correct / total
 
     if printing:
@@ -98,7 +107,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
 
 
 def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=True, classifier=None, \
-                       conv_block_num=None, use_paper_metric=False):
+                       conv_block_num=None):
     """
     Computes the accuracy of a neural network for every class on a test or evaluation set wrapped by a loader.
 
@@ -120,8 +129,34 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     convolutional block of the neural network (where x = conv_block_num) and tested on dataset wrapped by the
     loader.
     :param conv_block_num: number of the RotNet convolutional block to which the classifier will be attached
-    :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
-    Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
-    :return:
+    :return: list of accuracy of every class
     """
+
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    conv_block_num -= 1
+
+    class_correct = list(0.0 for i in range(num_class))
+    class_total = list(0.0 for i in range(num_class))
+
+    accuracy = []
+
+    with torch.no_grad():
+        for data in loader:
+            images, labels = data
+            net.to(device)
+            if rot == None:
+                pass
+            else:
+                rot_images, class_labels, rot_labels = rtt.create_rot_batch(images, labels, rot=rot)
+                rot_images, rot_labels = rot_images.to(device), rot_labels(device)
+                outputs = net(rot_images)
+                _, predicted = torch.max(outputs, 1)
+                c = (predicted == rot_labels.long()).squeeze()
+                for i in range(len(rot_labels)):
+                    label = rot_labels[i].int()
+                    class_correct[label] += c[i].item()
+                    class_total[label] += 1
+
+
 
