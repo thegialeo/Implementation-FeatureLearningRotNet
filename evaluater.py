@@ -182,6 +182,3 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
             print('Accuracy of {} : {: .3f} %'.format(class_names[i], class_accuracy))
 
     return accuracy
-
-
-
