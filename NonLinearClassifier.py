@@ -48,7 +48,7 @@ class NonLinearClassifier(nn.Module):
         :param feat: feature map that should be forwarded through the classifier
         :return: result of forwarding the feature map through the classifier
         """
-        
+
         return self.classifier(feat)
 
 
