@@ -5,7 +5,6 @@ import GlobalAveragePooling as pool
 
 
 
-
 class RotNet(nn.Module):
     """
     The RotNet model consists of 3, 4 or 5 convolutional blocks. Furthermore, max pooling is applied between
