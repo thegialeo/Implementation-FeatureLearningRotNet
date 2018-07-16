@@ -111,7 +111,7 @@ class RotNet(nn.Module):
             if isinstance(module, nn.Conv2d):
                 if module.weight.requires_grad:
                     n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
-                    module.weight.data.normal_(0, math.sqrt(2. / n))
+                    module.weight.data.normal_(0, math.sqrt(2.0 / n))
             elif isinstance(module, nn.BatchNorm2d):
                 if module.weight.requires_grad:
                     module.weight.data.fill_(1)

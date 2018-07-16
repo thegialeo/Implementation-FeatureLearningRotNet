@@ -49,7 +49,7 @@ class NonLinearClassifier(nn.Module):
         for module in self.modules():
             if isinstance(module, nn.Conv2d):
                 n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
-                module.weight.data.normal_(0, math.sqrt(2. / n))
+                module.weight.data.normal_(0, math.sqrt(2.0 / n))
             elif isinstance(module, nn.BatchNorm1d):
                 module.weight.data.fill_(1)
                 module.bias.data.zero()
@@ -57,6 +57,8 @@ class NonLinearClassifier(nn.Module):
                 module.weight.data.fill_(1)
                 module.bias.data.zero_()
             elif isinstance(module, nn.Linear):
-                feat_in = module.in_features
                 feat_out = module.out_features
-                std_val = np.sqrt()
+                std = np.sqrt(2.0 / feat_out)
+                module.weight.data.normal_(0.0, std)
+                if module.bias is not None:
+                    module.bias.data.fill_(0.0)
