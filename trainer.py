@@ -3,8 +3,8 @@ import rotation as rtt
 import evaluater as eva
 
 
-def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimizer, class_names, classifier=None,
-          conv_block_num=None, epoch_offset=0, rot=None, max_accuracy=0, best_epoch=0, use_paper_metric=False):
+def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classifier=None, conv_block_num=None,
+          epoch_offset=0, rot=None, printing=True, max_accuracy=0, best_epoch=0, use_paper_metric=False):
     """
     Train a neural network.
 
@@ -16,13 +16,11 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
     task. Only the classifier is trained, not the neural network itself. No fine tuning.
 
     :param num_epoch: number of training epochs
-    :param num_class: number of total classes in the classification task
     :param net: neural network that should be trained
     :param trainloader: the training set wrapped by a loader
     :param validloader: the validation set wrapped by a loader
     :param criterion: the criterion to compute the loss
     :param optimizer: the optimization method used for training
-    :param class_names: list of class names corresponding the labels
     :param classifier: optional argument, if provided, the classifier will be attached to the feature map of the x-th
     convolutional block of the neural network (where x = conv_block_num) and trained for classification task
     :param conv_block_num: number of the RotNet convolutional block to which the classifier will be attached
@@ -30,6 +28,7 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
     the same network)
     :param rot: list of classes for the rotation task. Possible classes are: '90', '180', '270'. Optional argument, if
     provided the neural network will be trained for the rotation task instead of the classification task.
+    :param printing: if True, the max_accuracy and best_epoch will be additionally printed to the console
     :param max_accuracy: the highest accuracy achieved on the validation set so far
     :param best_epoch: the epoch in which the highest accuracy was achieved on the validation set
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
@@ -41,6 +40,8 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
     """
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    conv_block_num -= 1
 
     loss_log = []
     accuracy_log = []
@@ -102,7 +103,38 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
                 torch.save(net.state_dict(), 'models/RotNet_rotation_{}'.format(best_epoch))
 
     # printing
-    print('highest validation accuracy: {:.3f} achieved at epoch: {}'.format(max_accuracy, best_epoch))
+    if printing:
+        print('highest validation accuracy: {:.3f} was achieved at epoch: {}'.format(max_accuracy, best_epoch))
+        print('Finished Training')
 
     return loss_log, accuracy_log, max_accuracy, best_epoch
 
+
+def adaptive_learning(num_epoch, lr, epoch_change, momentum, weight_decay, net, trainloader, validloader, criterion, optimizer,
+                      classifier=None, conv_block_num=None, rot=None, use_paper_metric=False):
+    """
+    Use adaptive learning rate to train the neural network.
+
+    Optional: If rot is provided, the neural network is trained for rotation prediction task instead of the
+    classification task (neural network is used for training).
+
+    Optional: If a classifier and conv_block_num is provided, the classifier is attached to the feature map of
+    the x-th convolutional block of the neural network (where x = conv_block_num) and trained for the classification
+    task. Only the classifier is trained, not the neural network itself. No fine tuning.
+
+    :param num_epoch: number of training epochs
+    :param lr: a list of learning rates use for adaptive learning
+    :param epoch_change: epochs where the learning rate should be change to the next rate from the list 'lr'
+    :param momentum: 
+    :param weight_decay:
+    :param net: neural network that should be trained
+    :param trainloader:
+    :param validloader:
+    :param criterion:
+    :param optimizer:
+    :param classifier:
+    :param conv_block_num:
+    :param rot:
+    :param use_paper_metric:
+    :return:
+    """

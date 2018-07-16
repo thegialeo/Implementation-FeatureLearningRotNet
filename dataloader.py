@@ -12,7 +12,7 @@ def load_cifar(save_path):
     :return: trainset, testset, classes of CIFAR10
     """
 
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.49139968, 0.48215841, 0.44653091), \
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.49139968, 0.48215841, 0.44653091),
                                                                                 (0.24703223, 0.24348513, 0.26158784))])
 
     trainset = datasets.CIFAR10(root=save_path, train=True, transform=transform, download=True)
@@ -38,10 +38,10 @@ def make_dataloaders(trainset, testset, valid_size, batch_size):
     train_idx = indices[:len(indices) - valid_size]
     valid_idx = indices[len(indices) - valid_size:]
 
-    trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, \
+    trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
                                               sampler=torch.utils.data.sampler.SubsetRandomSampler(train_idx))
 
-    validloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size, \
+    validloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
                                               sampler=torch.utils.data.sampler.SubsetRandomSampler(valid_idx))
 
     testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=batch_size)
