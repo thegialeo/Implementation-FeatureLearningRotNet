@@ -101,7 +101,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
         accuracy = 100.0 * correct / total
 
     if printing:
-        print('Accuracy: {:, .3f} %'.format(accuracy))
+        print('Accuracy: {: .3f} %'.format(accuracy))
 
     return accuracy
 
@@ -146,7 +146,24 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
             images, labels = data
             net.to(device)
             if rot == None:
-                pass
+                images, labels = images.to(device), labels.to(device)
+                if classifier == None:
+                    outputs = net(images)
+                    _, predicted = torch.max(outputs, 1)
+                    c = (predicted == labels).squeeze()
+                    for i in range(len(labels)):
+                        label = labels[i]
+                        class_correct[label] += c[i].item()
+                        class_total[label] += 1
+                else:
+                    feats = net(images, out_feat_keys=[net.all_feat_names[conv_block_num]])
+                    outputs = classifier(feats)
+                    _, predicted = torch.max(outputs, 1)
+                    c = (predicted == labels).squeeze()
+                    for i in range(len(labels)):
+                        label = labels[i]
+                        class_correct[label] += c[i].item()
+                        class_total[label] += 1
             else:
                 rot_images, class_labels, rot_labels = rtt.create_rot_batch(images, labels, rot=rot)
                 rot_images, rot_labels = rot_images.to(device), rot_labels(device)
@@ -157,6 +174,14 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
                     label = rot_labels[i].int()
                     class_correct[label] += c[i].item()
                     class_total[label] += 1
+
+    for i in range(num_class):
+        class_accuracy = 100 * class_correct[i] / class_total[i]
+        accuracy.append(class_accuracy)
+        if printing:
+            print('Accuracy of {} : {: .3f} %'.format(class_names[i], class_accuracy))
+
+    return accuracy
 
 
 
