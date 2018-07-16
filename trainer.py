@@ -93,9 +93,16 @@ def train(num_epoch, num_class, net, trainloader, validloader, criterion, optimi
         if accuracy >= max_accuracy:
             best_epoch = epoch + 1
             max_accuracy = accuracy
-            if rot == None:
-                if classifier == None:
-                    torch.save(net.state_dict(), 'models/RotNet_classification_{}')
+            if rot is None:
+                if classifier is None:
+                    torch.save(net.state_dict(), 'models/RotNet_classification_{}'.format(best_epoch))
+                else:
+                    torch.save(classifier.state_dict(), 'models/classifier_{}'.format(best_epoch))
             else:
                 torch.save(net.state_dict(), 'models/RotNet_rotation_{}'.format(best_epoch))
+
+    # printing
+    print('highest validation accuracy: {:.3f} achieved at epoch: {}'.format(max_accuracy, best_epoch))
+
+    return loss_log, accuracy_log, max_accuracy, best_epoch
 
