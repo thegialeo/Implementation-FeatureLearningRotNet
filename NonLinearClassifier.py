@@ -42,6 +42,12 @@ class NonLinearClassifier(nn.Module):
 
 
     def forward(self, feat):
+        """
+        Forward the feature map output of the RotNet 'feat' through the classifier and return the output.
+
+        :param feat: feature map that should be forwarded through the classifier
+        :return: result of forwarding the feature map through the classifier
+        """
         return self.classifier(feat)
 
 
