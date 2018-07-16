@@ -48,10 +48,15 @@ class NonLinearClassifier(nn.Module):
         :param feat: feature map that should be forwarded through the classifier
         :return: result of forwarding the feature map through the classifier
         """
+        
         return self.classifier(feat)
 
 
     def weight_init(self):
+        """
+        Initialize the weights for all layers of the classifier.
+        """
+
         for module in self.modules():
             if isinstance(module, nn.Conv2d):
                 n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
