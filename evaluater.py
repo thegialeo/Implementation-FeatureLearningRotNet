@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 import rotation as rtt
 
 
@@ -106,7 +105,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
     return accuracy
 
 
-def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=True, classifier=None, \
+def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=True, classifier=None,
                        conv_block_num=None):
     """
     Computes the accuracy of a neural network for every class on a test or evaluation set wrapped by a loader.
@@ -125,7 +124,7 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     :param rot: list of classes for the rotation task. Possible classes are: '90', '180', '270'. Optional argument, if
     provided the neural network will be tested for the rotation task instead of the classification task.
     :param printing: if True, the accuracies will be additionally printed to the console
-    :param classifier: ptional argument, if provided, the classifier will be attached to the feature map of the x-th
+    :param classifier: optional argument, if provided, the classifier will be attached to the feature map of the x-th
     convolutional block of the neural network (where x = conv_block_num) and tested on dataset wrapped by the
     loader.
     :param conv_block_num: number of the RotNet convolutional block to which the classifier will be attached
