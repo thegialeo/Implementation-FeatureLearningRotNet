@@ -101,20 +101,38 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
             max_accuracy = accuracy
             if rot is None:
                 if classifier is None:
-                    torch.save(net.state_dict(), 'models/RotNet_classification_{}_best'.format(best_epoch))
-                    if last_best_epoch != 0:
-                        if os.path.isfile('models/RotNet_classification_{}_best'.format(last_best_epoch)):
-                            os.remove('models/RotNet_classification_{}_best'.format(last_best_epoch))
+                    if use_paper_metric:
+                        torch.save(net.state_dict(), 'models/RotNet_classification_{}_best_paper'.format(best_epoch))
+                        if last_best_epoch != 0:
+                            if os.path.isfile('models/RotNet_classification_{}_best_paper'.format(last_best_epoch)):
+                                os.remove('models/RotNet_classification_{}_best_paper'.format(last_best_epoch))
+                    else:
+                        torch.save(net.state_dict(), 'models/RotNet_classification_{}_best'.format(best_epoch))
+                        if last_best_epoch != 0:
+                            if os.path.isfile('models/RotNet_classification_{}_best'.format(last_best_epoch)):
+                                os.remove('models/RotNet_classification_{}_best'.format(last_best_epoch))
                 else:
-                    torch.save(classifier.state_dict(), 'models/classifier_{}_best'.format(best_epoch))
-                    if last_best_epoch != 0:
-                        if os.path.isfile('models/classifier_{}_best'.format(last_best_epoch)):
-                            os.remove('models/classifier_{}_best'.format(last_best_epoch))
+                    if use_paper_metric:
+                        torch.save(classifier.state_dict(), 'models/classifier_{}_best_paper'.format(best_epoch))
+                        if last_best_epoch != 0:
+                            if os.path.isfile('models/classifier_{}_best_paper'.format(last_best_epoch)):
+                                os.remove('models/classifier_{}_best_paper'.format(last_best_epoch))
+                    else:
+                        torch.save(classifier.state_dict(), 'models/classifier_{}_best'.format(best_epoch))
+                        if last_best_epoch != 0:
+                            if os.path.isfile('models/classifier_{}_best'.format(last_best_epoch)):
+                                os.remove('models/classifier_{}_best'.format(last_best_epoch))
             else:
-                torch.save(net.state_dict(), 'models/RotNet_rotation_{}_best'.format(best_epoch))
-                if last_best_epoch != 0:
-                    if os.path.isfile('models/RotNet_rotation_{}_best'.format(last_best_epoch)):
-                        os.remove('models/RotNet_rotation_{}_best'.format(last_best_epoch))
+                if use_paper_metric:
+                    torch.save(net.state_dict(), 'models/RotNet_rotation_{}_best_paper'.format(best_epoch))
+                    if last_best_epoch != 0:
+                        if os.path.isfile('models/RotNet_rotation_{}_best_paper'.format(last_best_epoch)):
+                            os.remove('models/RotNet_rotation_{}_best_paper'.format(last_best_epoch))
+                else:
+                    torch.save(net.state_dict(), 'models/RotNet_rotation_{}_best'.format(best_epoch))
+                    if last_best_epoch != 0:
+                        if os.path.isfile('models/RotNet_rotation_{}_best'.format(last_best_epoch)):
+                            os.remove('models/RotNet_rotation_{}_best'.format(last_best_epoch))
 
     # printing
     if printing:

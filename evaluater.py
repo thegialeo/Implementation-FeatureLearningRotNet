@@ -49,6 +49,8 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+    net.to(device)
+
     conv_block_num -= 1
 
     correct = 0.0
@@ -60,7 +62,6 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
     with torch.no_grad():
         for data in loader:
             images, labels = data
-            net.to(device)
             if rot is None:
                 images, labels = images.to(device), labels.to(device)
                 if classifier is None:
@@ -133,6 +134,8 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+    net.to(device)
+
     conv_block_num -= 1
 
     class_correct = list(0.0 for i in range(num_class))
@@ -143,7 +146,6 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     with torch.no_grad():
         for data in loader:
             images, labels = data
-            net.to(device)
             if rot is None:
                 images, labels = images.to(device), labels.to(device)
                 if classifier is None:
