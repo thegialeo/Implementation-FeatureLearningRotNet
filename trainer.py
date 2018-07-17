@@ -45,7 +45,8 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
 
     net.to(device)
 
-    conv_block_num -= 1
+    if conv_block_num is not None:
+        conv_block_num -= 1
 
     loss_log = []
     accuracy_log = []
@@ -179,7 +180,6 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, trainl
     accuracy_log = []
     max_accuracy = 0
     best_epoch = 0
-
 
     for i, lr in enumerate(lr_list):
         if i == 0:
