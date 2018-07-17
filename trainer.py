@@ -122,7 +122,7 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
     return loss_log, accuracy_log, max_accuracy, best_epoch
 
 
-def adaptive_learning(num_epoch, lr_list, epoch_change, momentum, weight_decay, net, trainloader, validloader,
+def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, trainloader, validloader,
                       criterion, classifier=None, conv_block_num=None, rot=None, use_paper_metric=False):
     """
     Use adaptive learning rate to train the neural network.
@@ -134,7 +134,6 @@ def adaptive_learning(num_epoch, lr_list, epoch_change, momentum, weight_decay, 
     the x-th convolutional block of the neural network (where x = conv_block_num) and trained for the classification
     task. Only the classifier is trained, not the neural network itself. No fine tuning.
 
-    :param num_epoch: number of training epochs
     :param lr_list: a list of learning rates use for adaptive learning
     :param epoch_change: epochs where the learning rate should be change. Should have the same length as lr_list.
     :param momentum: momentum factor for stochastic gradient descent
@@ -184,4 +183,3 @@ def adaptive_learning(num_epoch, lr_list, epoch_change, momentum, weight_decay, 
         accuracy_log += tmp_accuracy_log
 
     return loss_log, accuracy_log, max_accuracy, best_epoch
-
