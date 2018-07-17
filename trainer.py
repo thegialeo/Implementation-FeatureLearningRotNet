@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.optim as optim
 import rotation as rtt
@@ -93,15 +94,25 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
 
         # save best model
         if accuracy >= max_accuracy:
+            last_best_epoch = best_epoch
             best_epoch = epoch + 1
             max_accuracy = accuracy
             if rot is None:
                 if classifier is None:
-                    torch.save(net.state_dict(), 'models/RotNet_classification_{}'.format(best_epoch))
+                    torch.save(net.state_dict(), 'models/RotNet_classification_{}_best'.format(best_epoch))
+                    if last_best_epoch != 0:
+                        if os.path.isfile('models/RotNet_classification_{}_best'.format(last_best_epoch)):
+                            os.remove('models/RotNet_classification_{}_best'.format(last_best_epoch))
                 else:
-                    torch.save(classifier.state_dict(), 'models/classifier_{}'.format(best_epoch))
+                    torch.save(classifier.state_dict(), 'models/classifier_{}_best'.format(best_epoch))
+                    if last_best_epoch != 0:
+                        if os.path.isfile('models/classifier_{}_best'.format(last_best_epoch)):
+                            os.remove('models/classifier_{}_best'.format(last_best_epoch))
             else:
-                torch.save(net.state_dict(), 'models/RotNet_rotation_{}'.format(best_epoch))
+                torch.save(net.state_dict(), 'models/RotNet_rotation_{}_best'.format(best_epoch))
+                if last_best_epoch != 0:
+                    if os.path.isfile('models/RotNet_rotation_{}_best'.format(last_best_epoch)):
+                        os.remove('models/RotNet_rotation_{}_best'.format(last_best_epoch))
 
     # printing
     if printing:
