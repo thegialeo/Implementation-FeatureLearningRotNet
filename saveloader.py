@@ -1,5 +1,6 @@
-import pickle
 import os
+import pickle
+import torch
 
 
 def save_variable(var_list, filename):
@@ -33,3 +34,44 @@ def load_variable(filename):
         var_list = pickle.load(f)
 
     return var_list
+
+
+def save_net(net, filename):
+    """
+    Saves a neural network in a file.
+
+    :param net: The neural network that should be saved.
+    :param filename: name of the file the neural network should be save in
+    :return: None
+    """
+
+    subdir = "./models"
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+
+    torch.save(net, os.path.join(subdir, filename))
+
+
+def load_net(filename):
+    """
+    Loads a neural network from a file.
+
+    :param filename: name of the file to load the neural network from
+    :return: neural network from the file
+    """
+
+    path = os.path.join("./models", filename)
+
+    net = torch.load(path)
+
+
+def delete_file(path):
+    """
+    Delete the file corresponding to the given path.
+
+    :param path: path of the file that should be deleted
+    :return: None
+    """
+
+    if os.path.isfile(path):
+        os.remove(path)
