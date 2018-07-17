@@ -43,6 +43,8 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+    net.to(device)
+
     conv_block_num -= 1
 
     loss_log = []
