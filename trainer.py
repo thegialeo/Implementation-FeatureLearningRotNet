@@ -1,4 +1,5 @@
 import torch
+import torch.optim as optim
 import rotation as rtt
 import evaluater as eva
 
@@ -110,8 +111,8 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
     return loss_log, accuracy_log, max_accuracy, best_epoch
 
 
-def adaptive_learning(num_epoch, lr, epoch_change, momentum, weight_decay, net, trainloader, validloader, criterion, optimizer,
-                      classifier=None, conv_block_num=None, rot=None, use_paper_metric=False):
+def adaptive_learning(num_epoch, lr_list, epoch_change, momentum, weight_decay, net, trainloader, validloader,
+                      criterion, classifier=None, conv_block_num=None, rot=None, use_paper_metric=False):
     """
     Use adaptive learning rate to train the neural network.
 
@@ -123,18 +124,53 @@ def adaptive_learning(num_epoch, lr, epoch_change, momentum, weight_decay, net, 
     task. Only the classifier is trained, not the neural network itself. No fine tuning.
 
     :param num_epoch: number of training epochs
-    :param lr: a list of learning rates use for adaptive learning
-    :param epoch_change: epochs where the learning rate should be change to the next rate from the list 'lr'
-    :param momentum: 
-    :param weight_decay:
+    :param lr_list: a list of learning rates use for adaptive learning
+    :param epoch_change: epochs where the learning rate should be change. Should have the same length as lr_list.
+    :param momentum: momentum factor for stochastic gradient descent
+    :param weight_decay: weight decay (L2 penalty) for stochastic gradient descent
     :param net: neural network that should be trained
-    :param trainloader:
-    :param validloader:
-    :param criterion:
-    :param optimizer:
-    :param classifier:
-    :param conv_block_num:
-    :param rot:
-    :param use_paper_metric:
-    :return:
+    :param trainloader: the training set wrapped by a loader
+    :param validloader: the validation set wrapped by a loader
+    :param criterion: the criterion to compute the loss
+    :param classifier: optional argument, if provided, the classifier will be attached to the feature map of the x-th
+    convolutional block of the neural network (where x = conv_block_num) and trained for classification task
+    :param conv_block_num: number of the RotNet convolutional block to which the classifier will be attached
+    :param rot: list of classes for the rotation task. Possible classes are: '90', '180', '270'. Optional argument, if
+    provided the neural network will be trained for the rotation task instead of the classification task.
+    :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
+    Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :return: loss_log: a list of all losses computed at each training epoch
+             accuracy_log: a list of all validation accuracies computed at each training epoch
+             max_accuracy: the highest accuracy achieved on the validation set so far
+             best_epoch: the epoch in which the highest accuracy was achieved on the validation set
     """
+
+    loss_log = []
+    accuracy_log = []
+    max_accuracy = 0
+    best_epoch = 0
+
+
+    for i, lr in enumerate(lr_list):
+        if i == 0:
+            epoch_offset = 0
+        else:
+            epoch_offset = epoch_change[i-1]
+
+        num_epoch = epoch_change[i] - epoch_offset
+
+        if classifier is None:
+            optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+        else:
+            optimizer = optim.SGD(classifier.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+
+        tmp_loss_log, tmp_accuracy_log, max_accuracy, best_epoch = train(num_epoch, net, trainloader, validloader,
+                                                                         criterion, optimizer, classifier,
+                                                                         conv_block_num, epoch_offset, rot, False,
+                                                                         max_accuracy, best_epoch, use_paper_metric)
+
+        loss_log += tmp_loss_log
+        accuracy_log += tmp_accuracy_log
+
+    return loss_log, accuracy_log, max_accuracy, best_epoch
+
