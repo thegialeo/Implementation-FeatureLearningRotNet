@@ -51,6 +51,9 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
 
     net.to(device)
 
+    if classifier is not None:
+        classifier.to(device)
+
     if conv_block_num is not None:
         conv_block_num -= 1
 
@@ -136,6 +139,9 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     net.to(device)
+
+    if classifier is not None:
+        classifier.to(device)
 
     if conv_block_num is not None:
         conv_block_num -= 1

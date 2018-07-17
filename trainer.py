@@ -46,6 +46,9 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
 
     net.to(device)
 
+    if classifier is not None:
+        classifier.to(device)
+
     if conv_block_num is not None:
         conv_block_num -= 1
 

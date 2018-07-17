@@ -62,11 +62,10 @@ class NonLinearClassifier(nn.Module):
                 n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
                 module.weight.data.normal_(0, math.sqrt(2.0 / n))
             elif isinstance(module, nn.BatchNorm1d):
-                module.weight.data.fill_(1)
-                module.bias.data.zero()
-            elif isinstance(module, nn.BatchNorm2d):
-                module.weight.data.fill_(1)
-                module.bias.data.zero_()
+                if module.weight.requires_grad:
+                    module.weight.data.fill_(1)
+                if module.bias.requires_grad:
+                    module.bias.data.zero_()
             elif isinstance(module, nn.Linear):
                 feat_out = module.out_features
                 std = np.sqrt(2.0 / feat_out)
