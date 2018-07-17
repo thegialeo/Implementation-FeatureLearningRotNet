@@ -94,7 +94,7 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
         accuracy = eva.get_accuracy(validloader, net, rot=rot, printing=False, classifier=classifier,
                                     conv_block_num=conv_block_num, use_paper_metric=use_paper_metric)
         accuracy_log.append(accuracy)
-        print("Epoch: {} -> Evaluation Accuracy: {}".format(epoch + 1, accuracy))
+        print("Epoch: {} -> Validation Accuracy: {}".format(epoch + 1, accuracy))
 
         # save best model
         if accuracy >= max_accuracy:
@@ -189,9 +189,14 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, trainl
         else:
             optimizer = optim.SGD(classifier.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
 
+        if i == (len(lr_list) - 1):
+            printing = True
+        else:
+            printing = False
+
         tmp_loss_log, tmp_accuracy_log, max_accuracy, best_epoch = train(num_epoch, net, trainloader, validloader,
                                                                          criterion, optimizer, classifier,
-                                                                         conv_block_num, epoch_offset, rot, False,
+                                                                         conv_block_num, epoch_offset, rot, printing,
                                                                          max_accuracy, best_epoch, use_paper_metric)
 
         loss_log += tmp_loss_log

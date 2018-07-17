@@ -89,7 +89,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
                 rot_images, rot_labels = rot_images.to(device), rot_labels.to(device)
                 outputs = net(rot_images)
                 if use_paper_metric:
-                    tmp_accuracy = accuracy_from_paper(outputs, rot_labels)[0].item()
+                    tmp_accuracy = accuracy_from_paper(outputs, rot_labels.long())[0].item()
                     accuracy_lst.append(tmp_accuracy)
                 else:
                     _, predicted = torch.max(outputs.data, 1)
@@ -102,7 +102,7 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
         accuracy = 100.0 * correct / total
 
     if printing:
-        print('Accuracy: {: .3f} %'.format(accuracy))
+        print('Test Accuracy: {: .3f} %'.format(accuracy))
 
     return accuracy
 
@@ -182,6 +182,6 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
         class_accuracy = 100 * class_correct[i] / class_total[i]
         accuracy.append(class_accuracy)
         if printing:
-            print('Accuracy of {} : {: .3f} %'.format(class_names[i], class_accuracy))
+            print('Test Accuracy of {} : {: .3f} %'.format(class_names[i], class_accuracy))
 
     return accuracy
