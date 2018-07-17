@@ -51,7 +51,8 @@ def get_accuracy(loader, net, rot=None, printing=True, classifier=None, conv_blo
 
     net.to(device)
 
-    conv_block_num -= 1
+    if conv_block_num is not None:
+        conv_block_num -= 1
 
     correct = 0.0
     total = 0.0
@@ -136,7 +137,8 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
 
     net.to(device)
 
-    conv_block_num -= 1
+    if conv_block_num is not None:
+        conv_block_num -= 1
 
     class_correct = list(0.0 for i in range(num_class))
     class_total = list(0.0 for i in range(num_class))
