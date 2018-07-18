@@ -175,7 +175,7 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
                         class_total[label] += 1
             else:
                 rot_images, class_labels, rot_labels = rtt.create_rot_batch(images, labels, rot=rot)
-                rot_images, rot_labels = rot_images.to(device), rot_labels(device)
+                rot_images, rot_labels = rot_images.to(device), rot_labels.to(device)
                 outputs = net(rot_images)
                 _, predicted = torch.max(outputs, 1)
                 c = (predicted == rot_labels.long()).squeeze()
