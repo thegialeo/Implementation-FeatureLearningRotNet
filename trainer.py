@@ -31,7 +31,8 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
     the same network)
     :param rot: list of classes for the rotation task. Possible classes are: '90', '180', '270'. Optional argument, if
     provided the neural network will be trained for the rotation task instead of the classification task.
-    :param printing: if True, the max_accuracy and best_epoch will be additionally printed to the console
+    :param printing: if True, the max_accuracy and best_epoch will be additionally printed to the console. Also the
+    current models will be saved.
     :param max_accuracy: the highest accuracy achieved on the validation set so far
     :param best_epoch: the epoch in which the highest accuracy was achieved on the validation set
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
@@ -137,6 +138,22 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
     if printing:
         print('highest validation accuracy: {:.3f} was achieved at epoch: {}'.format(max_accuracy, best_epoch))
         print('Finished Training')
+        if rot is None:
+            if classifier is None:
+                if use_paper_metric:
+                    fm.save_net(net, 'RotNet_classification_{}_paper'.format(num_epoch + epoch_offset))
+                else:
+                    fm.save_net(net, 'RotNet_classification_{}'.format(num_epoch + epoch_offset))
+            else:
+                if use_paper_metric:
+                    fm.save_net(classifier, 'classifier_{}_paper'.format(num_epoch + epoch_offset))
+                else:
+                    fm.save_net(classifier, 'classifier_{}'.format(num_epoch + epoch_offset))
+        else:
+            if use_paper_metric:
+                fm.save_net(net, 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
+            else:
+                fm.save_net(net, 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
 
     return loss_log, accuracy_log, max_accuracy, best_epoch
 
