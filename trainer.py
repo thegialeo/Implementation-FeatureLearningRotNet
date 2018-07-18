@@ -96,7 +96,8 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
 
         # epoch validation accuracy
         accuracy = eva.get_accuracy(validloader, net, rot=rot, printing=False, classifier=classifier,
-                                    conv_block_num=conv_block_num, use_paper_metric=use_paper_metric)
+                                    conv_block_num=conv_block_num if conv_block_num is None else conv_block_num+1,
+                                    use_paper_metric=use_paper_metric)
         accuracy_log.append(accuracy)
         print("Epoch: {} -> Validation Accuracy: {}".format(epoch + 1, accuracy))
 
