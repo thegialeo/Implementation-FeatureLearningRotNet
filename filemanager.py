@@ -64,6 +64,8 @@ def load_net(filename):
 
     net = torch.load(path)
 
+    return net
+
 
 def delete_file(path):
     """
