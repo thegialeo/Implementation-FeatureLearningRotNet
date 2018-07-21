@@ -143,18 +143,26 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
             if classifier is None:
                 if use_paper_metric:
                     fm.save_net(net, 'RotNet_classification_{}_paper'.format(num_epoch + epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log], 'RotNet_classification_{}_paper'.format(num_epoch +
+                                                                                                       epoch_offset))
                 else:
                     fm.save_net(net, 'RotNet_classification_{}'.format(num_epoch + epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log], 'RotNet_classification_{}'.format(num_epoch +
+                                                                                                 epoch_offset))
             else:
                 if use_paper_metric:
                     fm.save_net(classifier, 'classifier_{}_paper'.format(num_epoch + epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log], 'classifier_{}_paper'.format(num_epoch + epoch_offset))
                 else:
                     fm.save_net(classifier, 'classifier_{}'.format(num_epoch + epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log], 'classifier_{}'.format(num_epoch + epoch_offset))
         else:
             if use_paper_metric:
                 fm.save_net(net, 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
+                fm.save_variable([loss_log, accuracy_log], 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
             else:
                 fm.save_net(net, 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
+                fm.save_variable([loss_log, accuracy_log], 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
 
     return loss_log, accuracy_log, max_accuracy, best_epoch
 
