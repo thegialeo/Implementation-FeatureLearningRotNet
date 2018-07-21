@@ -4,6 +4,7 @@ import torch.optim as optim
 import filemanager as fm
 import rotation as rtt
 import evaluater as eva
+import NonLinearClassifier as NLC
 
 
 def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classifier=None, conv_block_num=None,
@@ -118,13 +119,16 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
                             fm.delete_file('models/RotNet_classification_{}_best'.format(last_best_epoch))
                 else:
                     if use_paper_metric:
-                        fm.save_net(classifier, 'classifier_{}_best_paper'.format(best_epoch))
+                        fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best_paper'.format(conv_block_num,
+                                                                                                 best_epoch))
                         if last_best_epoch != 0:
-                            fm.delete_file('models/classifier_{}_best_paper'.format(last_best_epoch))
+                            fm.delete_file('models/classifier_block_{}_epoch_{}_best_paper'.format(conv_block_num,
+                                                                                                   last_best_epoch))
                     else:
-                        fm.save_net(classifier, 'classifier_{}_best'.format(best_epoch))
+                        fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best'.format(conv_block_num, best_epoch))
                         if last_best_epoch != 0:
-                            fm.delete_file('models/classifier_{}_best'.format(last_best_epoch))
+                            fm.delete_file('models/classifier_block_{}_epoch_{}_best'.format(conv_block_num,
+                                                                                             last_best_epoch))
             else:
                 if use_paper_metric:
                     fm.save_net(net, 'RotNet_rotation_{}_best_paper'.format(best_epoch))
@@ -143,26 +147,33 @@ def train(num_epoch, net, trainloader, validloader, criterion, optimizer, classi
             if classifier is None:
                 if use_paper_metric:
                     fm.save_net(net, 'RotNet_classification_{}_paper'.format(num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log], 'RotNet_classification_{}_paper'.format(num_epoch +
-                                                                                                       epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                                     'RotNet_classification_{}_paper'.format(num_epoch + epoch_offset))
                 else:
                     fm.save_net(net, 'RotNet_classification_{}'.format(num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log], 'RotNet_classification_{}'.format(num_epoch +
-                                                                                                 epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                                     'RotNet_classification_{}'.format(num_epoch + epoch_offset))
             else:
                 if use_paper_metric:
-                    fm.save_net(classifier, 'classifier_{}_paper'.format(num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log], 'classifier_{}_paper'.format(num_epoch + epoch_offset))
+                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper'.format(conv_block_num,
+                                                                                        num_epoch + epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                                     'classifier_block_{}_epoch_{}_paper'.format(conv_block_num,
+                                                                                 num_epoch + epoch_offset))
                 else:
-                    fm.save_net(classifier, 'classifier_{}'.format(num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log], 'classifier_{}'.format(num_epoch + epoch_offset))
+                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}'.format(conv_block_num,
+                                                                                  num_epoch + epoch_offset))
+                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                                     'classifier_block_{}_epoch_{}'.format(conv_block_num, num_epoch + epoch_offset))
         else:
             if use_paper_metric:
                 fm.save_net(net, 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
-                fm.save_variable([loss_log, accuracy_log], 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
+                fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                                 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
             else:
                 fm.save_net(net, 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
-                fm.save_variable([loss_log, accuracy_log], 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
+                fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                                 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
 
     return loss_log, accuracy_log, max_accuracy, best_epoch
 
@@ -256,3 +267,24 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
              max_accuracy: the highest accuracy achieved on the validation set so far
              best_epoch: the epoch in which the highest accuracy was achieved on the validation set
     """
+
+    loss_log = []
+    accuracy_log = []
+    max_accuracy = []
+    best_epoch = []
+
+    for i in range(conv_block_num):
+        if i == 0:
+            clf = NLC.NonLinearClassifier(num_classes, 96*16*16)
+        else:
+            clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
+
+        tmp_loss_log, tmp_accuracy_log, tmp_max_accuracy, tmp_best_epoch = adaptive_learning(lr_list, epoch_change,
+            momentum, weight_decay, net, trainloader, validloader, criterion, clf, i+1)
+
+        loss_log.append(tmp_loss_log)
+        accuracy_log.append(tmp_accuracy_log)
+        max_accuracy.append(tmp_max_accuracy)
+        best_epoch.append(tmp_best_epoch)
+
+    return loss_log, accuracy_log, max_accuracy, best_epoch
