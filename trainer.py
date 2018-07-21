@@ -232,3 +232,27 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, trainl
         accuracy_log += tmp_accuracy_log
 
     return loss_log, accuracy_log, max_accuracy, best_epoch
+
+
+def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentum, weight_decay, net, trainloader,
+                     validloader, criterion, use_paper_metric=False):
+    """
+    Train classifiers on all convolutional blocks feature maps of the RotNet.
+
+    :param conv_block_num: number of convolutional blocks in the RotNet
+    :param num_classes: number of classes in the classification task
+    :param lr_list: a list of learning rates use for adaptive learning
+    :param epoch_change: epochs where the learning rate should be change. Should have the same length as lr_list.
+    :param momentum: momentum factor for stochastic gradient descent
+    :param weight_decay: weight decay (L2 penalty) for stochastic gradient descent
+    :param net: the RotNet
+    :param trainloader: the training set wrapped by a loader
+    :param validloader: the validation set wrapped by a loader
+    :param criterion: the criterion to compute the loss
+    :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
+    Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :return: loss_log: a list of all losses computed at each training epoch
+             accuracy_log: a list of all validation accuracies computed at each training epoch
+             max_accuracy: the highest accuracy achieved on the validation set so far
+             best_epoch: the epoch in which the highest accuracy was achieved on the validation set
+    """
