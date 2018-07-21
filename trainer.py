@@ -280,7 +280,7 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
             clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
 
         tmp_loss_log, tmp_accuracy_log, tmp_max_accuracy, tmp_best_epoch = adaptive_learning(lr_list, epoch_change,
-            momentum, weight_decay, net, trainloader, validloader, criterion, clf, i+1)
+            momentum, weight_decay, net, trainloader, validloader, criterion, clf, i+1, None, use_paper_metric)
 
         loss_log.append(tmp_loss_log)
         accuracy_log.append(tmp_accuracy_log)
