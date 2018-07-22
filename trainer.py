@@ -128,19 +128,19 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                 if rot is None:
                     if classifier is None:
                         if use_paper_metric:
-                            fm.save_net(net, 'RotNet_classification_{}_best_paper'.format(best_epoch))
+                            fm.save_net(net, 'RotNet_classification_{}_paper_best'.format(best_epoch))
                             if last_best_epoch != 0:
-                                fm.delete_file('models/RotNet_classification_{}_best_paper'.format(last_best_epoch))
+                                fm.delete_file('models/RotNet_classification_{}_paper_best'.format(last_best_epoch))
                         else:
                             fm.save_net(net, 'RotNet_classification_{}_best'.format(best_epoch))
                             if last_best_epoch != 0:
                                 fm.delete_file('models/RotNet_classification_{}_best'.format(last_best_epoch))
                     else:
                         if use_paper_metric:
-                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best_paper'.format(conv_block_num,
+                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper_best'.format(conv_block_num,
                                                                                                      best_epoch))
                             if last_best_epoch != 0:
-                                fm.delete_file('models/classifier_block_{}_epoch_{}_best_paper'.format(conv_block_num,
+                                fm.delete_file('models/classifier_block_{}_epoch_{}_paper_best'.format(conv_block_num,
                                                                                                        last_best_epoch))
                         else:
                             fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best'.format(conv_block_num,
@@ -150,9 +150,9 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                                                                                                  last_best_epoch))
                 else:
                     if use_paper_metric:
-                        fm.save_net(net, 'RotNet_rotation_{}_best_paper'.format(best_epoch))
+                        fm.save_net(net, 'RotNet_rotation_{}_paper_best'.format(best_epoch))
                         if last_best_epoch != 0:
-                            fm.delete_file('models/RotNet_rotation_{}_best_paper'.format(last_best_epoch))
+                            fm.delete_file('models/RotNet_rotation_{}_paper_best'.format(last_best_epoch))
                     else:
                         fm.save_net(net, 'RotNet_rotation_{}_best'.format(best_epoch))
                         if last_best_epoch != 0:

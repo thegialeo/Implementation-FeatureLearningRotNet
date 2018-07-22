@@ -79,15 +79,40 @@ def delete_file(path):
         os.remove(path)
 
 
-def add_block_to_name(num_block, best_epoch=None):
+def add_block_to_name(num_block, num_epoch_lst, best_epoch_lst=None):
     """
     In the subdirectory ./models all saved nets and classifiers files created during training, will have
     (num_block)_block_net added to the end of their name.
 
-    :param num_block: string. Intended to be the number of convolutional blocks in the RotNet
-    :param best_epoch: optional. If provided, the best models saved during training will have (num_block)_block_net
-    added to the end of their name as well
+    :param num_block: number. Intended to be the number of convolutional blocks in the RotNet
+    :param num_epoch_lst: list of number of training epochs. This is needed to find the appropriate files
+    :param best_epoch_lst: list of numbers. Optional: if provided, the best models saved during training will have
+    (num_block)_block_net added to the end of their name as well
     :return: None
     """
 
-    
+    bib = ['RotNet_classification_{}_paper', 'RotNet_classification_{}', 'classifier_block_{}_epoch_{}_paper',
+           'classifier_block_{}_epoch_{}', 'RotNet_rotation_{}_paper', 'RotNet_rotation_{}']
+
+    names = []
+
+    for i, string in enumerate(bib):
+        if i == 2 or i == 3:
+            for j in range(1, num_block + 1):
+                for num_epoch in num_epoch_lst:
+                    names.append(string.format(j, num_epoch))
+                if best_epoch_lst is not None:
+                    for best_epoch in best_epoch_lst:
+                        names.append(string.format(j, best_epoch) + '_best')
+        else:
+            for num_epoch in num_epoch_lst:
+                names.append(string.format(num_epoch))
+            if best_epoch is not None:
+                for best_epoch in best_epoch_lst:
+                    names.append(string.format(best_epoch) + '_best')
+
+    for name in names:
+        path = os.path.join("./models", name)
+        if os.path.isfile(path):
+            os.rename(path, path + '_{}_block_net'.format(num_block))
+
