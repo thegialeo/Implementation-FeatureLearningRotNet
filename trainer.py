@@ -20,6 +20,11 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
     the x-th convolutional block of the neural network (where x = conv_block_num) and trained for the classification
     task. Only the classifier is trained, not the neural network itself. No fine tuning.
 
+    Optional: If a validation loader is provided, the validation accuracy will be evaluated after every training epoch
+    and the best model will be kept.
+
+    Optional: If a test loader is provided, the test accuracy will be evaluated after every training epoch
+
     :param num_epoch: number of training epochs
     :param net: neural network that should be trained
     :param criterion: the criterion to compute the loss
@@ -41,7 +46,7 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
     :return: loss_log: a list of all losses computed at each training epoch
-             accuracy_log: a list of all validation accuracies computed at each training epoch
+             accuracy_log: a list of all validation/test accuracies computed at each training epoch
              max_accuracy: the highest accuracy achieved on the validation set so far
              best_epoch: the epoch in which the highest accuracy was achieved on the validation set
     """
@@ -57,7 +62,8 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
         conv_block_num -= 1
 
     loss_log = []
-    accuracy_log = []
+    valid_accuracy_log = []
+    test_accuracy_log = []
 
     for epoch in range(epoch_offset, num_epoch + epoch_offset):
         running_loss = 0.0
@@ -102,7 +108,7 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
             accuracy = eva.get_accuracy(testloader, net, rot=rot, printing=False, classifier=classifier,
                                         conv_block_num=conv_block_num if conv_block_num is None else conv_block_num + 1,
                                         use_paper_metric=use_paper_metric)
-            accuracy_log.append(accuracy)
+            test_accuracy_log.append(accuracy)
             print("Epoch: {} -> Test Accuracy: {}".format(epoch + 1, accuracy))
 
         if validloader is not None:
@@ -111,7 +117,7 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
             accuracy = eva.get_accuracy(validloader, net, rot=rot, printing=False, classifier=classifier,
                                         conv_block_num=conv_block_num if conv_block_num is None else conv_block_num+1,
                                         use_paper_metric=use_paper_metric)
-            accuracy_log.append(accuracy)
+            valid_accuracy_log.append(accuracy)
             print("Epoch: {} -> Validation Accuracy: {}".format(epoch + 1, accuracy))
 
             # save best model
@@ -160,35 +166,35 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
             if classifier is None:
                 if use_paper_metric:
                     fm.save_net(net, 'RotNet_classification_{}_paper'.format(num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                    fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
                                      'RotNet_classification_{}_paper'.format(num_epoch + epoch_offset))
                 else:
                     fm.save_net(net, 'RotNet_classification_{}'.format(num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                    fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
                                      'RotNet_classification_{}'.format(num_epoch + epoch_offset))
             else:
                 if use_paper_metric:
                     fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper'.format(conv_block_num,
                                                                                         num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                    fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
                                      'classifier_block_{}_epoch_{}_paper'.format(conv_block_num,
                                                                                  num_epoch + epoch_offset))
                 else:
                     fm.save_net(classifier, 'classifier_block_{}_epoch_{}'.format(conv_block_num,
                                                                                   num_epoch + epoch_offset))
-                    fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                    fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
                                      'classifier_block_{}_epoch_{}'.format(conv_block_num, num_epoch + epoch_offset))
         else:
             if use_paper_metric:
                 fm.save_net(net, 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
-                fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
                                  'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
             else:
                 fm.save_net(net, 'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
-                fm.save_variable([loss_log, accuracy_log, max_accuracy, best_epoch],
+                fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
                                  'RotNet_rotation_{}'.format(num_epoch + epoch_offset))
 
-    return loss_log, accuracy_log, max_accuracy, best_epoch
+    return loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch
 
 
 def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criterion, trainloader, validloader=None,
@@ -226,7 +232,8 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
     """
 
     loss_log = []
-    accuracy_log = []
+    valid_accuracy_log = []
+    test_accuracy_log = []
     max_accuracy = 0
     best_epoch = 0
 
@@ -248,16 +255,15 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
         else:
             printing = False
 
-        tmp_loss_log, tmp_accuracy_log, max_accuracy, best_epoch = train(num_epoch, net, criterion, optimizer,
-                                                                         trainloader, validloader, testloader,
-                                                                         classifier, conv_block_num, epoch_offset, rot,
-                                                                         printing, max_accuracy, best_epoch,
-                                                                         use_paper_metric)
+        tmp_loss_log, tmp_valid_accuracy_log, tmp_test_accuracy_log, max_accuracy, best_epoch = \
+            train(num_epoch, net, criterion, optimizer, trainloader, validloader, testloader, classifier,
+                  conv_block_num, epoch_offset, rot, printing, max_accuracy, best_epoch, use_paper_metric)
 
         loss_log += tmp_loss_log
-        accuracy_log += tmp_accuracy_log
+        valid_accuracy_log += tmp_valid_accuracy_log
+        test_accuracy_log += tmp_test_accuracy_log
 
-    return loss_log, accuracy_log, max_accuracy, best_epoch
+    return loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch
 
 
 def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentum, weight_decay, net, criterion,
@@ -285,7 +291,8 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     """
 
     loss_log = []
-    accuracy_log = []
+    valid_accuracy_log = []
+    test_accuracy_log = []
     max_accuracy = []
     best_epoch = []
 
@@ -295,13 +302,14 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
         else:
             clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
 
-        tmp_loss_log, tmp_accuracy_log, tmp_max_accuracy, tmp_best_epoch = adaptive_learning(lr_list, epoch_change,
-            momentum, weight_decay, net, criterion, trainloader, validloader, testloader, clf, i+1, None,
-            use_paper_metric)
+        tmp_loss_log, tmp_valid_accuracy_log, tmp_test_accuracy_log, tmp_max_accuracy, tmp_best_epoch = \
+            adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criterion, trainloader, validloader,
+                              testloader, clf, i+1, None, use_paper_metric)
 
         loss_log.append(tmp_loss_log)
-        accuracy_log.append(tmp_accuracy_log)
+        valid_accuracy_log.append(tmp_valid_accuracy_log)
+        test_accuracy_log.append(tmp_test_accuracy_log)
         max_accuracy.append(tmp_max_accuracy)
         best_epoch.append(tmp_best_epoch)
 
-    return loss_log, accuracy_log, max_accuracy, best_epoch
+    return loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch
