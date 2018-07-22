@@ -79,12 +79,15 @@ def delete_file(path):
         os.remove(path)
 
 
-def add_block_to_name(num_block):
+def add_block_to_name(num_block, best_epoch=None):
     """
     In the subdirectory ./models all saved nets and classifiers files created during training, will have
-    (num_block)_block_net add to the end of their name.
+    (num_block)_block_net added to the end of their name.
 
     :param num_block: string. Intended to be the number of convolutional blocks in the RotNet
+    :param best_epoch: optional. If provided, the best models saved during training will have (num_block)_block_net
+    added to the end of their name as well
     :return: None
     """
+
     
