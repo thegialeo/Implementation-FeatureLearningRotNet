@@ -15,8 +15,11 @@ def load_cifar(save_path):
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.49139968, 0.48215841, 0.44653091),
                                                                                 (0.24703223, 0.24348513, 0.26158784))])
 
+    test_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(),
+                                         transform])
+
     trainset = datasets.CIFAR10(root=save_path, train=True, transform=transform, download=True)
-    testset = datasets.CIFAR10(root=save_path, train=False, transform=transform, download=True)
+    testset = datasets.CIFAR10(root=save_path, train=False, transform=test_transform, download=True)
 
     classes = ['plane', 'car', 'bird', 'cat', 'deer', 'dog', 'frog', 'horse', 'ship', 'truck']
 
