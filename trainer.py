@@ -247,9 +247,10 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
         num_epoch = epoch_change[i] - epoch_offset
 
         if classifier is None:
-            optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+            optimizer = optim.SGD(net.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay, nesterov=True)
         else:
-            optimizer = optim.SGD(classifier.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay)
+            optimizer = optim.SGD(classifier.parameters(), lr=lr, momentum=momentum, weight_decay=weight_decay,
+                                  nesterov=True)
 
         if i == (len(lr_list) - 1):
             printing = True
