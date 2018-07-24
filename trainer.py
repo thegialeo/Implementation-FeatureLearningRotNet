@@ -137,16 +137,16 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                                 fm.delete_file('models/RotNet_classification_{}_best'.format(last_best_epoch))
                     else:
                         if use_paper_metric:
-                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper_best'.format(conv_block_num,
+                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper_best'.format(conv_block_num + 1,
                                                                                                      best_epoch))
                             if last_best_epoch != 0:
-                                fm.delete_file('models/classifier_block_{}_epoch_{}_paper_best'.format(conv_block_num,
-                                                                                                       last_best_epoch))
+                                fm.delete_file('models/classifier_block_{}_epoch_{}_paper_best'.format(
+                                    conv_block_num + 1, last_best_epoch))
                         else:
-                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best'.format(conv_block_num,
+                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best'.format(conv_block_num + 1,
                                                                                                best_epoch))
                             if last_best_epoch != 0:
-                                fm.delete_file('models/classifier_block_{}_epoch_{}_best'.format(conv_block_num,
+                                fm.delete_file('models/classifier_block_{}_epoch_{}_best'.format(conv_block_num + 1,
                                                                                                  last_best_epoch))
                 else:
                     if use_paper_metric:
@@ -175,16 +175,17 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                                      'RotNet_classification_{}'.format(num_epoch + epoch_offset))
             else:
                 if use_paper_metric:
-                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper'.format(conv_block_num,
+                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper'.format(conv_block_num + 1,
                                                                                         num_epoch + epoch_offset))
                     fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
-                                     'classifier_block_{}_epoch_{}_paper'.format(conv_block_num,
+                                     'classifier_block_{}_epoch_{}_paper'.format(conv_block_num + 1,
                                                                                  num_epoch + epoch_offset))
                 else:
-                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}'.format(conv_block_num,
+                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}'.format(conv_block_num + 1,
                                                                                   num_epoch + epoch_offset))
                     fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
-                                     'classifier_block_{}_epoch_{}'.format(conv_block_num, num_epoch + epoch_offset))
+                                     'classifier_block_{}_epoch_{}'.format(conv_block_num + 1, 
+                                                                           num_epoch + epoch_offset))
         else:
             if use_paper_metric:
                 fm.save_net(net, 'RotNet_rotation_{}_paper'.format(num_epoch + epoch_offset))
