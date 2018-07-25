@@ -28,7 +28,7 @@ def load_cifar(save_path):
     return trainset, testset, classes
 
 
-def make_dataloaders(trainset, testset, valid_size, batch_size):
+def make_dataloaders(trainset, testset, valid_size, batch_size, subset=None):
     """
     Create loaders for the train-, validation- and testset.
 
@@ -36,19 +36,38 @@ def make_dataloaders(trainset, testset, valid_size, batch_size):
     :param testset: testset for which we want to create a test loader
     :param valid_size: size of the dataset wrapped by the validation loader
     :param batchsize: size of the batch the loader will load during training
+    :param subset: number of images per category (maximum: 5000 -> corresponds to whole training set)
     :return: trainloader, validloader, testloader
     """
 
-    indices = torch.randperm(len(trainset))
-    train_idx = indices[:len(indices) - valid_size]
-    valid_idx = indices[len(indices) - valid_size:]
+    if subset is None:
+        indices = torch.randperm(len(trainset))
+        train_idx = indices[:len(indices) - valid_size]
+        valid_idx = indices[len(indices) - valid_size:]
 
-    trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
-                                              sampler=torch.utils.data.sampler.SubsetRandomSampler(train_idx))
+        trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
+                                                  sampler=torch.utils.data.sampler.SubsetRandomSampler(train_idx))
 
-    validloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
-                                              sampler=torch.utils.data.sampler.SubsetRandomSampler(valid_idx))
+        validloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
+                                                  sampler=torch.utils.data.sampler.SubsetRandomSampler(valid_idx))
 
-    testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=batch_size)
+        testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=batch_size)
 
-    return trainloader, validloader, testloader
+        return trainloader, validloader, testloader
+
+    else:
+        subset_idx = []
+        counter = list(0.0 for i in range(10))
+
+        for index, label in enumerate(trainset.train_labels):
+            if counter[label] < subset:
+                subset_idx.append(index)
+            counter[label] += 1
+
+        trainloader = torch.utils.data.DataLoader(trainset, pin_memory=True, batch_size=batch_size,
+                                                  sampler=torch.utils.data.sampler.SubsetRandomSampler(subset_idx))
+
+        testloader = torch.utils.data.DataLoader(testset, pin_memory=True, batch_size=batch_size)
+
+        return  trainloader, testloader
+
