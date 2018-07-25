@@ -184,7 +184,7 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                     fm.save_net(classifier, 'classifier_block_{}_epoch_{}'.format(conv_block_num + 1,
                                                                                   num_epoch + epoch_offset))
                     fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
-                                     'classifier_block_{}_epoch_{}'.format(conv_block_num + 1, 
+                                     'classifier_block_{}_epoch_{}'.format(conv_block_num + 1,
                                                                            num_epoch + epoch_offset))
         else:
             if use_paper_metric:

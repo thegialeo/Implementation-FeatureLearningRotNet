@@ -16,7 +16,9 @@ def load_cifar(save_path):
                                                                                 (0.24703223, 0.24348513, 0.26158784))])
 
     train_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(),
-                                         transform])
+                                          transforms.ToTensor(),
+                                          transforms.Normalize((0.49139968, 0.48215841, 0.44653091),
+                                                               (0.24703223, 0.24348513, 0.26158784))])
 
     trainset = datasets.CIFAR10(root=save_path, train=True, transform=train_transform, download=True)
     testset = datasets.CIFAR10(root=save_path, train=False, transform=transform, download=True)
