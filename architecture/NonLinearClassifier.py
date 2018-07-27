@@ -1,7 +1,7 @@
 import torch.nn as nn
 import math
 import numpy as np
-import Flatten as fl
+from architecture import Flatten as fl
 
 
 

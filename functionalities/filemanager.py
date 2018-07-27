@@ -91,13 +91,14 @@ def add_block_to_name(num_block, num_epoch_lst, best_epoch_lst=None):
     :return: None
     """
 
-    bib = ['RotNet_classification_{}_paper', 'RotNet_classification_{}', 'classifier_block_{}_epoch_{}_paper',
-           'classifier_block_{}_epoch_{}', 'RotNet_rotation_{}_paper', 'RotNet_rotation_{}']
+    bib = ['RotNet_classification_{}_paper', 'RotNet_classification_{}', 'Classifier_block_{}_epoch_{}_paper',
+           'ConvClassifier_block_{}_epoch_{}_paper', 'Classifier_block_{}_epoch_{}', 'ConvClassifier_block_{}_epoch_{}',
+           'RotNet_rotation_{}_paper', 'RotNet_rotation_{}']
 
     names = []
 
     for i, string in enumerate(bib):
-        if i == 2 or i == 3:
+        if 2 <= i <= 5:
             for j in range(1, num_block + 1):
                 for num_epoch in num_epoch_lst:
                     names.append(string.format(j, num_epoch))

@@ -1,5 +1,5 @@
 import torch.nn as nn
-import BasicBlock as bb
+from architecture import BasicBlock as bb
 
 
 

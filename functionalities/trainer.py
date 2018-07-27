@@ -1,9 +1,9 @@
 import os
 import torch
 import torch.optim as optim
-import filemanager as fm
-import rotation as rtt
-import evaluater as eva
+from functionalities import filemanager as fm
+from functionalities import rotation as rtt
+from functionalities import evaluater as eva
 from architecture import NonLinearClassifier as NLC
 from architecture import ConvClassifier as CC
 
@@ -303,10 +303,10 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     :param use_ConvClassifier: If True, train convolutional block classifiers instead of a NonLinearClassifiers on the
     convolutional blocks feature maps of the RotNet. Default: False, in this case NonLinearClassifiers will be trained
     on the feature maps
-    :return: loss_log: a list of all losses computed at each training epoch
-             accuracy_log: a list of all validation accuracies computed at each training epoch
-             max_accuracy: the highest accuracy achieved on the validation set so far
-             best_epoch: the epoch in which the highest accuracy was achieved on the validation set
+    :return: loss_log: a 2d list of all losses computed at each training epoch for each block
+             accuracy_log: a 2d list of all validation accuracies computed at each training epoch for each block
+             max_accuracy: list the highest accuracy achieved on the validation set so far
+             best_epoch: list of the epoch in which the highest accuracy was achieved on the validation set
     """
 
     loss_log = []

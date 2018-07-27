@@ -1,5 +1,5 @@
 import torch
-import rotation as rtt
+from functionalities import rotation as rtt
 
 
 # This metric function is copy pasted from the paper "Unsupervised Representation Learning by Predicting Image
