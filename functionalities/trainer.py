@@ -10,7 +10,7 @@ from architecture import ConvClassifier as CC
 
 def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, testloader=None, classifier=None,
           conv_block_num=None, epoch_offset=0, rot=None, printing=True, max_accuracy=0, best_epoch=0,
-          use_paper_metric=False):
+          use_paper_metric=False, use_ConvClassifier=False):
     """
     Train a neural network.
 
@@ -46,6 +46,9 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
     :param best_epoch: the epoch in which the highest accuracy was achieved on the validation set
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :param use_ConvClassifier: This parameter is not indented to be changed, but rather will be passed from the
+    train_all_blocks function and subsequently from the adaptive_learning function. In other words, you do not need to
+    provide this argument if using this function.
     :return: loss_log: a list of all losses computed at each training epoch
              accuracy_log: a list of all validation/test accuracies computed at each training epoch
              max_accuracy: the highest accuracy achieved on the validation set so far
@@ -61,6 +64,11 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
 
     if conv_block_num is not None:
         conv_block_num -= 1
+
+    if use_ConvClassifier:
+        conv_string = 'Conv'
+    else:
+        conv_string = ''
 
     loss_log = []
     valid_accuracy_log = []
@@ -138,17 +146,17 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                                 fm.delete_file('models/RotNet_classification_{}_best'.format(last_best_epoch))
                     else:
                         if use_paper_metric:
-                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper_best'.format(conv_block_num + 1,
-                                                                                                     best_epoch))
-                            if last_best_epoch != 0:
-                                fm.delete_file('models/classifier_block_{}_epoch_{}_paper_best'.format(
-                                    conv_block_num + 1, last_best_epoch))
+                                fm.save_net(classifier, '{}Classifier_block_{}_epoch_{}_paper_best'.format(conv_string,
+                                    conv_block_num + 1, best_epoch))
+                                if last_best_epoch != 0:
+                                    fm.delete_file('models/{}Classifier_block_{}_epoch_{}_paper_best'.format(conv_string,
+                                        conv_block_num + 1, last_best_epoch))
                         else:
-                            fm.save_net(classifier, 'classifier_block_{}_epoch_{}_best'.format(conv_block_num + 1,
-                                                                                               best_epoch))
+                            fm.save_net(classifier, '{}Classifier_block_{}_epoch_{}_best'.format(conv_string,
+                                conv_block_num + 1, best_epoch))
                             if last_best_epoch != 0:
-                                fm.delete_file('models/classifier_block_{}_epoch_{}_best'.format(conv_block_num + 1,
-                                                                                                 last_best_epoch))
+                                fm.delete_file('models/{}Classifier_block_{}_epoch_{}_best'.format(conv_string,
+                                    conv_block_num + 1, last_best_epoch))
                 else:
                     if use_paper_metric:
                         fm.save_net(net, 'RotNet_rotation_{}_paper_best'.format(best_epoch))
@@ -176,16 +184,16 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
                                      'RotNet_classification_{}'.format(num_epoch + epoch_offset))
             else:
                 if use_paper_metric:
-                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}_paper'.format(conv_block_num + 1,
-                                                                                        num_epoch + epoch_offset))
+                    fm.save_net(classifier, '{}Classifier_block_{}_epoch_{}_paper'.format(conv_string,
+                        conv_block_num + 1, num_epoch + epoch_offset))
                     fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
-                                     'classifier_block_{}_epoch_{}_paper'.format(conv_block_num + 1,
-                                                                                 num_epoch + epoch_offset))
+                        '{}Classifier_block_{}_epoch_{}_paper'.format(conv_string, conv_block_num + 1,
+                                                                      num_epoch + epoch_offset))
                 else:
-                    fm.save_net(classifier, 'classifier_block_{}_epoch_{}'.format(conv_block_num + 1,
+                    fm.save_net(classifier, '{}Classifier_block_{}_epoch_{}'.format(conv_string, conv_block_num + 1,
                                                                                   num_epoch + epoch_offset))
                     fm.save_variable([loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch],
-                                     'classifier_block_{}_epoch_{}'.format(conv_block_num + 1,
+                                     '{}Classifier_block_{}_epoch_{}'.format(conv_string, conv_block_num + 1,
                                                                            num_epoch + epoch_offset))
         else:
             if use_paper_metric:
@@ -201,7 +209,8 @@ def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, t
 
 
 def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criterion, trainloader, validloader=None,
-                      testloader=None, classifier=None,  conv_block_num=None, rot=None, use_paper_metric=False):
+                      testloader=None, classifier=None,  conv_block_num=None, rot=None, use_paper_metric=False,
+                      use_ConvClassifier=False):
     """
     Use adaptive learning rate to train the neural network.
 
@@ -228,6 +237,8 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
     provided the neural network will be trained for the rotation task instead of the classification task.
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :param use_ConvClassifier: This parameter is not indented to be changed, but rather will be passed from the
+    train_all_blocks function. In other words, you do not need to provide this argument if using this function.
     :return: loss_log: a list of all losses computed at each training epoch
              accuracy_log: a list of all validation accuracies computed at each training epoch
              max_accuracy: the highest accuracy achieved on the validation set so far
@@ -261,7 +272,8 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
 
         tmp_loss_log, tmp_valid_accuracy_log, tmp_test_accuracy_log, max_accuracy, best_epoch = \
             train(num_epoch, net, criterion, optimizer, trainloader, validloader, testloader, classifier,
-                  conv_block_num, epoch_offset, rot, printing, max_accuracy, best_epoch, use_paper_metric)
+                  conv_block_num, epoch_offset, rot, printing, max_accuracy, best_epoch, use_paper_metric,
+                  use_ConvClassifier)
 
         loss_log += tmp_loss_log
         valid_accuracy_log += tmp_valid_accuracy_log
@@ -317,7 +329,7 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
 
         tmp_loss_log, tmp_valid_accuracy_log, tmp_test_accuracy_log, tmp_max_accuracy, tmp_best_epoch = \
             adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criterion, trainloader, validloader,
-                              testloader, clf, i+1, None, use_paper_metric)
+                              testloader, clf, i+1, None, use_paper_metric, use_ConvClassifier)
 
         loss_log.append(tmp_loss_log)
         valid_accuracy_log.append(tmp_valid_accuracy_log)
