@@ -4,7 +4,8 @@ import torch.optim as optim
 import filemanager as fm
 import rotation as rtt
 import evaluater as eva
-import NonLinearClassifier as NLC
+from architecture import NonLinearClassifier as NLC
+from architecture import ConvClassifier as CC
 
 
 def train(num_epoch, net, criterion, optimizer, trainloader, validloader=None, testloader=None, classifier=None,
@@ -270,7 +271,7 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
 
 
 def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentum, weight_decay, net, criterion,
-                     trainloader, validloader=None, testloader=None, use_paper_metric=False):
+                     trainloader, validloader=None, testloader=None, use_paper_metric=False, use_ConvClassifier=False):
     """
     Train classifiers on all convolutional blocks feature maps of the RotNet.
 
@@ -287,6 +288,9 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     :param testloader: the test set wrapped by a loader
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :param use_ConvClassifier: If True, train convolutional block classifiers instead of a NonLinearClassifiers on the
+    convolutional blocks feature maps of the RotNet. Default: False, in this case NonLinearClassifiers will be trained
+    on the feature maps
     :return: loss_log: a list of all losses computed at each training epoch
              accuracy_log: a list of all validation accuracies computed at each training epoch
              max_accuracy: the highest accuracy achieved on the validation set so far
@@ -301,9 +305,15 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
 
     for i in range(conv_block_num):
         if i == 0:
-            clf = NLC.NonLinearClassifier(num_classes, 96*16*16)
+            if use_ConvClassifier:
+                clf = CC.ConvClassifier(num_classes, 96*16*16)
+            else:
+                clf = NLC.NonLinearClassifier(num_classes, 96*16*16)
         else:
-            clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
+            if use_ConvClassifier:
+                clf = CC.ConvClassifier(num_classes, 192*8*8)
+            else:
+                clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
 
         tmp_loss_log, tmp_valid_accuracy_log, tmp_test_accuracy_log, tmp_max_accuracy, tmp_best_epoch = \
             adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criterion, trainloader, validloader,
