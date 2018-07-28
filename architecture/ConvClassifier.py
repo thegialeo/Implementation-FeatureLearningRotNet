@@ -1,5 +1,6 @@
 import torch.nn as nn
 import math
+import numpy as np
 from architecture import ConvBlock as cb
 from architecture import GlobalAveragePooling as pool
 

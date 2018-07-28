@@ -318,12 +318,12 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     for i in range(conv_block_num):
         if i == 0:
             if use_ConvClassifier:
-                clf = CC.ConvClassifier(num_classes, 96*16*16)
+                clf = CC.ConvClassifier(num_classes, 96)
             else:
                 clf = NLC.NonLinearClassifier(num_classes, 96*16*16)
         else:
             if use_ConvClassifier:
-                clf = CC.ConvClassifier(num_classes, 192*8*8)
+                clf = CC.ConvClassifier(num_classes, 192)
             else:
                 clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
 
