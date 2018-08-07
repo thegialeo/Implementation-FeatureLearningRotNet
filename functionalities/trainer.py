@@ -283,7 +283,8 @@ def adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criter
 
 
 def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentum, weight_decay, net, criterion,
-                     trainloader, validloader=None, testloader=None, use_paper_metric=False, use_ConvClassifier=False):
+                     trainloader, validloader=None, testloader=None, use_paper_metric=False, use_ConvClassifier=False,
+                     optional_pooling=False):
     """
     Train classifiers on all convolutional blocks feature maps of the RotNet.
 
@@ -303,6 +304,8 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     :param use_ConvClassifier: If True, train convolutional block classifiers instead of a NonLinearClassifiers on the
     convolutional blocks feature maps of the RotNet. Default: False, in this case NonLinearClassifiers will be trained
     on the feature maps
+    :param optional_pooling: If true, the classifiers are adjusted to fit the dimensions changed through applying an
+    average pooling layer between the 3rd and 4th convolutional block
     :return: loss_log: a 2d list of all losses computed at each training epoch for each block
              accuracy_log: a 2d list of all validation accuracies computed at each training epoch for each block
              max_accuracy: list the highest accuracy achieved on the validation set so far
@@ -325,7 +328,10 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
             if use_ConvClassifier:
                 clf = CC.ConvClassifier(num_classes, 192)
             else:
-                clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
+                if optional_pooling and i > 1:
+                    clf = NLC.NonLinearClassifier(num_classes, 192*4*4)
+                else:
+                    clf = NLC.NonLinearClassifier(num_classes, 192*8*8)
 
         tmp_loss_log, tmp_valid_accuracy_log, tmp_test_accuracy_log, tmp_max_accuracy, tmp_best_epoch = \
             adaptive_learning(lr_list, epoch_change, momentum, weight_decay, net, criterion, trainloader, validloader,

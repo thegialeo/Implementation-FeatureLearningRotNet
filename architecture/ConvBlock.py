@@ -9,7 +9,7 @@ class conv_block(nn.Module):
     """
 
 
-    def __init__(self, in_channels, out_channels_block1, out_channels_block2, out_channels_block3, kernel_size_block1, \
+    def __init__(self, in_channels, out_channels_block1, out_channels_block2, out_channels_block3, kernel_size_block1,
                  kernel_size_block2, kernel_size_block3):
         """
         Initialize a convolutional block object.

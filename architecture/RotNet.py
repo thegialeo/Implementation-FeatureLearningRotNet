@@ -33,7 +33,7 @@ class RotNet(nn.Module):
         blocks[0].add_module('Block1_MaxPool', nn.MaxPool2d(kernel_size=3, stride=2, padding=1))
 
         # convolutional block 2
-        blocks[1].add_module('Block2_Conv', cb.conv_block(96, 196, 192, 192, 5, 1, 1))
+        blocks[1].add_module('Block2_Conv', cb.conv_block(96, 192, 192, 192, 5, 1, 1))
         blocks[1].add_module('Block2_AvgPool', nn.AvgPool2d(kernel_size=3, stride=2, padding=1))
 
         # convolutional block 3
@@ -50,7 +50,7 @@ class RotNet(nn.Module):
         # add global average pooling + linear classifier layer
         blocks.append(nn.Sequential())
         blocks[-1].add_module('GlobalAveragePooling', pool.GlobalAveragePooling())
-        blocks[-1].add_module('Classifier', nn.Linear(192,num_classes))
+        blocks[-1].add_module('Classifier', nn.Linear(192, num_classes))
 
         # create name structures for the network
         self._feature_blocks = nn.ModuleList(blocks)

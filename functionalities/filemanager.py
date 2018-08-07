@@ -108,12 +108,16 @@ def add_block_to_name(num_block, num_epoch_lst, best_epoch_lst=None):
         else:
             for num_epoch in num_epoch_lst:
                 names.append(string.format(num_epoch))
-            if best_epoch is not None:
+            if best_epoch_lst is not None:
                 for best_epoch in best_epoch_lst:
                     names.append(string.format(best_epoch) + '_best')
 
     for name in names:
-        path = os.path.join("./models", name)
-        if os.path.isfile(path):
-            os.rename(path, path + '_{}_block_net'.format(num_block))
+        path_mod = os.path.join("./models", name)
+        if os.path.isfile(path_mod):
+            os.rename(path_mod, path_mod + '_{}_block_net'.format(num_block))
+        base_path_var = os.path.join("./variables", name)
+        path_var = os.path.join(base_path_var, ".pkl")
+        if os.path.isfile(path_var):
+            os.rename(path_var, base_path_var + '_{}_block_net.pkl'.format(num_block))
 
