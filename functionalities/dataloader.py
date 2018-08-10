@@ -12,12 +12,14 @@ def load_cifar(save_path):
     :return: trainset, testset, classes of CIFAR10
     """
 
-    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize([x/255.0 for x in [125.3, 123.0, 113.9]], [x/255.0 for x in [63.0, 62.1, 66.7]])]) #(0.49139968, 0.48215841, 0.44653091),
+    transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize([x/255.0 for x in [125.3, 123.0, 113.9]],
+                                                                                [x/255.0 for x in [63.0, 62.1, 66.7]])]) #(0.49139968, 0.48215841, 0.44653091),
                                                                                     #(0.24703223, 0.24348513, 0.26158784)
 
     train_transform = transforms.Compose([transforms.RandomCrop(32, padding=4), transforms.RandomHorizontalFlip(),
                                           transforms.ToTensor(),
-                                          transforms.Normalize([x/255.0 for x in [125.3, 123.0, 113.9]], [x/255.0 for x in [63.0, 62.1, 66.7]])]) #(0.49139968, 0.48215841, 0.44653091),
+                                          transforms.Normalize([x/255.0 for x in [125.3, 123.0, 113.9]],
+                                                               [x/255.0 for x in [63.0, 62.1, 66.7]])]) #(0.49139968, 0.48215841, 0.44653091),
                                                                #(0.24703223, 0.24348513, 0.26158784)
 
     trainset = datasets.CIFAR10(root=save_path, train=True, transform=train_transform, download=True)

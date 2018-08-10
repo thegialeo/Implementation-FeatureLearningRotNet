@@ -117,7 +117,7 @@ def add_block_to_name(num_block, num_epoch_lst, best_epoch_lst=None):
         if os.path.isfile(path_mod):
             os.rename(path_mod, path_mod + '_{}_block_net'.format(num_block))
         base_path_var = os.path.join("./variables", name)
-        path_var = os.path.join(base_path_var, ".pkl")
+        path_var = base_path_var + ".pkl"
         if os.path.isfile(path_var):
             os.rename(path_var, base_path_var + '_{}_block_net.pkl'.format(num_block))
 
