@@ -194,7 +194,7 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     return accuracy
 
 
-def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional_avg=False):
+def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, supervised=False, optional_avg=False):
     """
     Evaluate all the accuracies and class accuracies of the RotNet model with the given number of convolutional blocks.
     This includes the Rotation Task, Non-Linear Classifier and Convolutional Classifier trained on all convolutional
@@ -204,6 +204,7 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional
     :param testloader: testloader used for accuracy evaluation
     :param classes: classes of the object classification task
     :param rot_classes: classes of the rotation task. Default: rotation of 0, 90, 180 and 270 degrees
+    :param supervised: If True evaluate Supervised NIN instead. Default: False
     :param optional_avg: optional average pooling was used after the 3rd convolutional block. Default: False
     :return: dictionary of all accuracies
     """
@@ -213,46 +214,63 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional
     if rot_classes is None:
         rot_classes = ['original', '90 rotation', '180 rotation', '270 rotation']
 
-    print("Evaluating RotNet model with {} Convolutional Blocks:".format(num_conv_block))
-    net = fm.load_net("RotNet_rotation_200_{}_block_net".format(num_conv_block))
+    if supervised:
+        net = fm.load_net("RotNet_classification_200")
 
-    print()
-    print("Evaluating Rotation Task:")
-    rot_acc = get_accuracy(testloader, net, ['90', '180', '270'])
-    rot_class_acc = get_class_accuracy(4, testloader, net, rot_classes, ['90', '180', '270'])
+        print("Evaluating Supervised NIN Classification Task:")
+        nin_acc = get_accuracy(testloader, net)
+        nin_class_acc = get_class_accuracy(10, testloader, net, classes)
 
-    acc_dict["Accuracy Rotation Task"] = rot_acc
-    acc_dict["Class Accuracy Rotation Task"] = rot_class_acc
+        acc_dict["Accuracy Supervised NIN"] = nin_acc
+        acc_dict["Class Accuracy Supervised NIN"] = nin_class_acc
 
-    print()
-    print("-" * 80)
-    print()
-    print("Starting to evaluate Non-Linear Classifier:")
-    for i in range(1, num_conv_block + 1):
+    else:
+        print("Evaluating RotNet model with {} Convolutional Blocks:".format(num_conv_block))
+        net = fm.load_net("RotNet_rotation_200_{}_block_net".format(num_conv_block))
+
         print()
-        print("Evaluating Non-Linear Classifier on Convolutional Block {}:".format(i))
+        print("Evaluating Rotation Task:")
+        rot_acc = get_accuracy(testloader, net, ['90', '180', '270'])
+        rot_class_acc = get_class_accuracy(4, testloader, net, rot_classes, ['90', '180', '270'])
 
-        clf = fm.load_net("Classifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
-        clf_acc = get_accuracy(testloader, net, classifier=clf, conv_block_num=i)
-        clf_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=clf, conv_block_num=i)
+        acc_dict["Accuracy Rotation Task"] = rot_acc
+        acc_dict["Class Accuracy Rotation Task"] = rot_class_acc
 
-        acc_dict["Accuracy Non-Linear ConvBlock {}".format(i)] = clf_acc
-        acc_dict["Class Accuracy Non-Linear ConvBlock {}".format(i)] = clf_class_acc
-
-    print()
-    print("-" * 80)
-    print()
-    print("Starting to evaluate Convolutional Classifier:")
-    for i in range(1, num_conv_block + 1):
         print()
-        print("Evaluating Convolutional Classifier on Convolutional Block {}".format(i))
+        print("-" * 80)
+        print()
+        print("Starting to evaluate Non-Linear Classifier:")
+        for i in range(1, num_conv_block + 1):
+            print()
+            print("Evaluating Non-Linear Classifier on Convolutional Block {}:".format(i))
 
-        conv_clf = fm.load_net("ConvClassifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
-        conv_clf_acc = get_accuracy(testloader, net, classifier=conv_clf, conv_block_num=i)
-        conv_clf_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=conv_clf, conv_block_num=i)
+            clf = fm.load_net("Classifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
+            clf_acc = get_accuracy(testloader, net, classifier=clf, conv_block_num=i)
+            clf_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=clf, conv_block_num=i)
 
-        acc_dict["Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_acc
-        acc_dict["Class Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_class_acc
+            acc_dict["Accuracy Non-Linear ConvBlock {}".format(i)] = clf_acc
+            acc_dict["Class Accuracy Non-Linear ConvBlock {}".format(i)] = clf_class_acc
+
+        print()
+        print("-" * 80)
+        print()
+        print("Starting to evaluate Convolutional Classifier:")
+        for i in range(1, num_conv_block + 1):
+            print()
+            print("Evaluating Convolutional Classifier on Convolutional Block {}".format(i))
+
+            conv_clf = fm.load_net("ConvClassifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
+            conv_clf_acc = get_accuracy(testloader, net, classifier=conv_clf, conv_block_num=i)
+            conv_clf_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=conv_clf, conv_block_num=i)
+
+            acc_dict["Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_acc
+            acc_dict["Class Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_class_acc
+
+    if supervised:
+        fm.save_variable(acc_dict, "Accuracy Supervised NIN")
+    else:
+        fm.save_variable(acc_dict, "Accuracy RotNet with {} ConvBlock".format(num_conv_block))
+
 
     return acc_dict
 
