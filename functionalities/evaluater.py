@@ -194,17 +194,17 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     return accuracy
 
 
-def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, supervised=False, optional_avg=False):
+def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional_avg=False):
     """
     Evaluate all the accuracies and class accuracies of the RotNet model with the given number of convolutional blocks.
     This includes the Rotation Task, Non-Linear Classifier and Convolutional Classifier trained on all convolutional
     blocks of the RotNet model.
 
-    :param num_conv_block: number of convolutional blocks in the RotNet model
+    :param num_conv_block: number of convolutional blocks in the RotNet model. If num_conv_block is 0, then Supervised
+    NIN will be evaluated instead.
     :param testloader: testloader used for accuracy evaluation
     :param classes: classes of the object classification task
     :param rot_classes: classes of the rotation task. Default: rotation of 0, 90, 180 and 270 degrees
-    :param supervised: If True evaluate Supervised NIN instead. Default: False
     :param optional_avg: optional average pooling was used after the 3rd convolutional block. Default: False
     :return: dictionary of all accuracies
     """
@@ -214,7 +214,7 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, supervis
     if rot_classes is None:
         rot_classes = ['original', '90 rotation', '180 rotation', '270 rotation']
 
-    if supervised:
+    if num_conv_block == 0:
         net = fm.load_net("RotNet_classification_200")
 
         print("Evaluating Supervised NIN Classification Task:")
@@ -266,7 +266,7 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, supervis
             acc_dict["Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_acc
             acc_dict["Class Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_class_acc
 
-    if supervised:
+    if num_conv_block == 0:
         fm.save_variable(acc_dict, "Accuracy Supervised NIN")
     else:
         fm.save_variable(acc_dict, "Accuracy RotNet with {} ConvBlock".format(num_conv_block))

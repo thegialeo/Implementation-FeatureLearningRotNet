@@ -286,7 +286,7 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
                      trainloader, validloader=None, testloader=None, use_paper_metric=False, use_ConvClassifier=False,
                      optional_pooling=False):
     """
-    Train classifiers on all convolutional blocks feature maps of the RotNet.
+    Train classifiers on all convolutional blocks feature maps of a pre-trained RotNet.
 
     :param conv_block_num: number of convolutional blocks in the RotNet
     :param num_classes: number of classes in the classification task
@@ -294,7 +294,7 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     :param epoch_change: epochs where the learning rate should be change. Should have the same length as lr_list.
     :param momentum: momentum factor for stochastic gradient descent
     :param weight_decay: weight decay (L2 penalty) for stochastic gradient descent
-    :param net: the RotNet
+    :param net: the pre-trained RotNet
     :param criterion: the criterion to compute the loss
     :param trainloader: the training set wrapped by a loader
     :param validloader: the validation set wrapped by a loader
@@ -344,3 +344,30 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
         best_epoch.append(tmp_best_epoch)
 
     return loss_log, valid_accuracy_log, test_accuracy_log, max_accuracy, best_epoch
+
+
+def train_semi(img_per_class, num_classes, trainset, testset, batch_size, semi_lr_lst, semi_epoch_change, super_lr_lst,
+               super_epoch_change, momentum, weight_decay, net, criterion, use_paper_metric=False):
+    """
+    Run the semi-supervised learning experiment. As a benchmark the supervised NIN experiment will be performed with the
+    same number of images per class.
+
+    :param img_per_class: a list of numbers which represent the number of images per class used for training
+    :param num_classes: number of classes in the classification task
+    :param trainset: set of data used for training
+    :param testset: set of data used for testing
+    :param batch_size: size of the batch used during training
+    :param semi_lr_lst:  a list of learning rates use for adaptive learning in the semi-supervised learning experiment
+    :param semi_epoch_change: epochs where the learning rate should be change during the semi-supervised learning
+    experiment. Should have the same length as semi_lr_list.
+    :param super_lr_lst:  a list of learning rates use for adaptive learning in the supervised NIN experiment
+    :param super_epoch_change: epochs where the learning rate should be change during the supervised NIN experiment.
+    Should have the same length as super_lr_list.
+    :param momentum: momentum factor for stochastic gradient descent
+    :param weight_decay: weight decay (L2 penalty) for stochastic gradient descent
+    :param net: the pre-trained RotNet from the Rotation Task
+    :param criterion: the criterion to compute the loss
+    :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
+    Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
+    :return: semi_loss_log, semi_accuracy_log
+    """
