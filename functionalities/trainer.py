@@ -279,7 +279,7 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
     :param epoch_change: epochs where the learning rate should be change. Should have the same length as lr_list.
     :param momentum: momentum factor for stochastic gradient descent
     :param weight_decay: weight decay (L2 penalty) for stochastic gradient descent
-    :param net: the pre-trained RotNet
+    :param net: the pre-trained RotNet from the rotation task
     :param criterion: the criterion to compute the loss
     :param trainloader: the training set wrapped by a loader
     :param validloader: the validation set wrapped by a loader
@@ -332,7 +332,7 @@ def train_all_blocks(conv_block_num, num_classes, lr_list, epoch_change, momentu
 
 
 def train_semi(img_per_class, num_classes, trainset, testset, batch_size, semi_lr_lst, semi_epoch_change, super_lr_lst,
-               super_epoch_change, momentum, weight_decay, net, criterion, use_paper_metric=False):
+               super_epoch_change, momentum, weight_decay, rotnet, criterion, use_paper_metric=False):
     """
     Run the semi-supervised learning experiment. As a benchmark the supervised NIN experiment will be performed with the
     same number of images per class.
@@ -350,7 +350,7 @@ def train_semi(img_per_class, num_classes, trainset, testset, batch_size, semi_l
     Should have the same length as super_lr_list.
     :param momentum: momentum factor for stochastic gradient descent
     :param weight_decay: weight decay (L2 penalty) for stochastic gradient descent
-    :param net: the pre-trained RotNet from the Rotation Task
+    :param rotnet: the pre-trained RotNet from the rotation task
     :param criterion: the criterion to compute the loss
     :param use_paper_metric: use the metric from the paper "Unsupervised Representation Learning by Predicting Image
     Rotations" by Spyros Gidaris, Praveer Singh, Nikos Komodakis. Default: False
@@ -368,7 +368,8 @@ def train_semi(img_per_class, num_classes, trainset, testset, batch_size, semi_l
         clf = CC.ConvClassifier(num_classes, 192)
 
         tmp_loss_log, _, tmp_test_accuracy_log, _, _ = adaptive_learning(semi_lr_lst, semi_epoch_change, momentum,
-            weight_decay, net, criterion, trainloader, None, testloader, clf, 2, None, use_paper_metric, True, num_img)
+            weight_decay, rotnet, criterion, trainloader, None, testloader, clf, 2, None, use_paper_metric, True,
+                num_img)
 
         semi_loss_log.append(tmp_loss_log)
         semi_accuracy_log.append(tmp_test_accuracy_log)
@@ -376,8 +377,8 @@ def train_semi(img_per_class, num_classes, trainset, testset, batch_size, semi_l
         net = RN.RotNet(num_classes=10, num_conv_block=3, add_avg_pool=False)
 
         nin_tmp_loss_log, _, nin_tmp_test_accuracy_log, _, _ = adaptive_learning(super_lr_lst, super_epoch_change,
-            momentum, weight_decay, net, criterion, trainloader, None, testloader, None, 2, use_paper_metric, False,
-                num_img)
+            momentum, weight_decay, net, criterion, trainloader, None, testloader, None, None, None, use_paper_metric,
+                False, num_img)
 
         super_loss_log.append(nin_tmp_loss_log)
         super_accuracy_log.append(nin_tmp_test_accuracy_log)
