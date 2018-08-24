@@ -228,39 +228,42 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional
         print("Evaluating RotNet model with {} Convolutional Blocks:".format(num_conv_block))
         net = fm.load_net("RotNet_rotation_200_{}_block_net".format(num_conv_block))
 
-        print()
+        print("\n")
         print("Evaluating Rotation Task:")
         rot_acc = get_accuracy(testloader, net, ['90', '180', '270'])
+        print("Accuracy per class:")
         rot_class_acc = get_class_accuracy(4, testloader, net, rot_classes, ['90', '180', '270'])
 
         acc_dict["Accuracy Rotation Task"] = rot_acc
         acc_dict["Class Accuracy Rotation Task"] = rot_class_acc
 
-        print()
+        print("\n")
         print("-" * 80)
-        print()
+        print("\n")
         print("Starting to evaluate Non-Linear Classifier:")
         for i in range(1, num_conv_block + 1):
-            print()
+            print("\n")
             print("Evaluating Non-Linear Classifier on Convolutional Block {}:".format(i))
 
             clf = fm.load_net("Classifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
             clf_acc = get_accuracy(testloader, net, classifier=clf, conv_block_num=i)
+            print("Accuracy per class:")
             clf_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=clf, conv_block_num=i)
 
             acc_dict["Accuracy Non-Linear ConvBlock {}".format(i)] = clf_acc
             acc_dict["Class Accuracy Non-Linear ConvBlock {}".format(i)] = clf_class_acc
 
-        print()
+        print("\n")
         print("-" * 80)
-        print()
+        print("\n")
         print("Starting to evaluate Convolutional Classifier:")
         for i in range(1, num_conv_block + 1):
-            print()
+            print("\n")
             print("Evaluating Convolutional Classifier on Convolutional Block {}".format(i))
 
             conv_clf = fm.load_net("ConvClassifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
             conv_clf_acc = get_accuracy(testloader, net, classifier=conv_clf, conv_block_num=i)
+            print("Accuracy per class:")
             conv_clf_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=conv_clf, conv_block_num=i)
 
             acc_dict["Accuracy ConvClassifier ConvBlock {}".format(i)] = conv_clf_acc
