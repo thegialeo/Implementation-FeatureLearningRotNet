@@ -77,54 +77,58 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
     plt.show()
 
 
-def plot_all(num_conv_block):
+def plot_all():
     """
-    Create plots for loss and accuracies history of the RotNet model with the given number of convolutional blocks.
+    Create plots for loss and accuracies history of all experiments.
 
-    :param num_conv_block: number of convolutional blocks in the RotNet model. If num_conv_block is 0, then Supervised
-    NIN will be plotted instead.
     :return: None
     """
 
-    if num_conv_block == 0:
-        loss, _, accuracy, max_accuracy, best_epoch = fm.load_variable("RotNet_classification_200")
-        plot(["Supervised NIN Classification"], [loss], [accuracy], "Supervised NIN Classification",
-             max_accuracy=[max_accuracy], best_epoch=[best_epoch])
-    else:
-        loss = []
-        accuracy = []
-        max_accuracy = []
-        best_epoch = []
-        title = []
+    # load losses and accuracies
+    rot_loss_3, rot_acc_3, clf_loss_3, clf_acc_3, conv_loss_3, conv_acc_3 = fm.load_variable("3_block_net")
+    rot_loss_4, rot_acc_4, clf_loss_4, clf_acc_4, conv_loss_4, conv_acc_4 = fm.load_variable("4_block_net")
+    rot_loss_5, rot_acc_5, clf_loss_5, clf_acc_5, conv_loss_5, conv_acc_5 = fm.load_variable("5_block_net")
+    super_loss, super_acc = fm.load_variable("supervised_NIN")
+    semi_loss, semi_acc, semi_sup_loss, semi_sup_acc = fm.load_variable("semi-supervised")
 
-        conv_loss = []
-        conv_accuracy = []
-        conv_max_accuracy = []
-        conv_best_epoch = []
-        conv_title = []
 
-        rot_loss, _, rot_accuracy, rot_max_accuracy, rot_best_epoch = fm.load_variable(
-            "RotNet_rotation_200_{}_block_net".format(num_conv_block))
 
-        plot(["Rotation Task with {} ConvBlock RotNet".format(num_conv_block)], [rot_loss], [rot_accuracy],
-             "Rotation Task with {} ConvBlock RotNet".format(num_conv_block))
+    # plot rotation task
+    rot_titles = ["Rotation Task of 3 Block RotNet", "Rotation Task of 4 Block RotNet",
+                  "Rotation Task of 5 Block RotNet"]
+    rot_loss = [rot_loss_3, rot_loss_4, rot_loss_5]
+    rot_acc = [rot_acc_3, rot_acc_4, rot_acc_5]
+    plot(rot_titles, rot_loss, rot_acc, "Rotation Task")
+    plot(rot_titles, rot_loss, rot_acc, "Rotation Task", all_in_one=True)
 
-        for i in range(1, num_conv_block + 1):
-            clf_loss, _, clf_accuracy, clf_max_accuracy, clf_best_epoch = fm.load_variable(
-                "Classifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
+    # plot non-linear classifier
+    clf_loss = [clf_loss_3, clf_loss_4, clf_loss_5]
+    clf_acc = [clf_acc_3, clf_acc_4, clf_acc_5]
+    for i in range(3, 6):
+        clf_titles = []
+        for j in range(1, i+1):
+            clf_titles.append("Non-Linear Classifier trained on ConvBlock {}".format(j))
+        plot(clf_titles, clf_loss[i - 3], clf_acc[i - 3], "Non-Linear Classifier and {} Block RotNet".format(i))
+        plot(clf_titles, clf_loss[i - 3], clf_acc[i - 3], "Non-Linear Classifier and {} Block RotNet".format(i),
+             all_in_one=True)
 
-            loss.append(clf_loss)
-            accuracy.append(clf_accuracy)
-            max_accuracy.append(clf_max_accuracy)
-            best_epoch.append(clf_best_epoch)
-            title.append("Classification Task ")
+    # plot convolutional classifier
+    conv_loss = [conv_loss_3, conv_loss_4, conv_loss_5]
+    conv_acc = [conv_acc_3, conv_acc_4, conv_acc_5]
+    for i in range(3, 6):
+        conv_titles = []
+        for j in range(1, i+1):
+            conv_titles.append("ConvClassifier trained on ConvBlock {}".format(j))
+        plot(conv_titles, conv_loss[i - 3], conv_acc[i - 3], "Convolutional Classifier and {} Block RotNet".format(i))
+        plot(conv_titles, conv_loss[i - 3], conv_acc[i - 3], "Convolutional Classifier and {} Block RotNet".format(i),
+             all_in_one=True)
 
-            conv_clf_loss, _, conv_clf_accuracy, conv_clf_max_accuracy, conv_clf_best_epoch = fm.load_variable(
-                "ConvClassifier_block_{}_epoch_100_{}_block_net".format(i, num_conv_block))
+    # plot supervised NIN
+    plot(["Supervised NIN"], super_loss, super_acc, "Supervised NIN")
+    plot(["Supervised NIN"], super_loss, super_acc, "Supervised NIN", all_in_one=True)
 
-            conv_loss.append(conv_clf_loss)
-            conv_accuracy.append(conv_clf_accuracy)
-            conv_max_accuracy.append(conv_clf_max_accuracy)
-            conv_best_epoch.append(conv_clf_best_epoch)
-
-        plot([])
+    # plot semi-supervised learning
+    plot(["Semi-supervised", "Supervised NIN"], [semi_loss, semi_sup_loss], [semi_acc, semi_sup_acc],
+         "Semi-supervised Learning")
+    plot(["Semi-supervised", "Supervised NIN"], [semi_loss, semi_sup_loss], [semi_acc, semi_sup_acc],
+         "Semi-supervised Learning", all_in_one=True)

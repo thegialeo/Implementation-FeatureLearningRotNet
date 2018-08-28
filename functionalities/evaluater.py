@@ -194,17 +194,20 @@ def get_class_accuracy(num_class, loader, net, class_names, rot=None, printing=T
     return accuracy
 
 
-def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional_avg=False):
+def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, semi=None, optional_avg=False):
     """
     Evaluate all the accuracies and class accuracies of the RotNet model with the given number of convolutional blocks.
     This includes the Rotation Task, Non-Linear Classifier and Convolutional Classifier trained on all convolutional
     blocks of the RotNet model.
 
-    :param num_conv_block: number of convolutional blocks in the RotNet model. If num_conv_block is 0, then Supervised
-    NIN will be evaluated instead.
+    :param num_conv_block: number of convolutional blocks in the RotNet model. If num_conv_block is 0, then the
+    Supervised NIN experiment will be evaluated instead. If num_conv_block is -1, then the semi-supervised experiment
+    will be evaluated instead.
     :param testloader: testloader used for accuracy evaluation
     :param classes: classes of the object classification task
     :param rot_classes: classes of the rotation task. Default: rotation of 0, 90, 180 and 270 degrees
+    :param semi: If num_conv_block is -1, then semi needs to be provided. semi is a list with numbers of images per
+    class.
     :param optional_avg: optional average pooling was used after the 3rd convolutional block. Default: False
     :return: dictionary of all accuracies
     """
@@ -223,7 +226,25 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional
 
         acc_dict["Accuracy Supervised NIN"] = nin_acc
         acc_dict["Class Accuracy Supervised NIN"] = nin_class_acc
+    elif num_conv_block == -1:
+        if semi is None:
+            raise ValueError('Please provide a value for the argument semi.')
+        print("Evaluating Semi-supervised Learning Experiment:")
+        net = fm.load_net("RotNet_rotation_200_4_block_net")
+        for num_img in semi:
+            semi_clf = fm.load_net("Semi-supervised_{}_ConvClassifier_block_2_epoch_100".format(num_img))
+            semi_acc = get_accuracy(testloader, net, classifier=semi_clf, conv_block_num=2)
+            semi_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=semi_clf, conv_block_num=2)
 
+            nin = fm.load_net("Semi-supervised_{}_RotNet_classification_200".format(num_img))
+            nin_acc = get_accuracy(testloader, nin, classes)
+            nin_class_acc = get_class_accuracy(10, testloader, nin, classes)
+
+            acc_dict["Accuracy Semi-supervised {}".format(num_img)] = semi_acc
+            acc_dict["Class Accuracy Semi-supervised {}".format(num_img)] = semi_class_acc
+
+            acc_dict["Accuracy Supervised NIN {}".format(num_img)] = nin_acc
+            acc_dict["Class Accuracy Supervised NIN {}".format(num_img)] = nin_class_acc
     else:
         print("Evaluating RotNet model with {} Convolutional Blocks:".format(num_conv_block))
         net = fm.load_net("RotNet_rotation_200_{}_block_net".format(num_conv_block))
@@ -271,6 +292,8 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, optional
 
     if num_conv_block == 0:
         fm.save_variable(acc_dict, "Accuracy Supervised NIN")
+    elif num_conv_block == -1:
+        fm.save_variable(acc_dict, "Accuracy Semi-supervised Learning")
     else:
         fm.save_variable(acc_dict, "Accuracy RotNet with {} ConvBlock".format(num_conv_block))
 
