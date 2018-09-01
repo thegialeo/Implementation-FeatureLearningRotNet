@@ -72,8 +72,12 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
 
     plt.tight_layout()
 
-    fig.savefig(filename + ".png")
+    subdir = "./plot"
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
 
+    fig.savefig(os.path.join(subdir, filename + ".png"))
+    
     plt.show()
 
 

@@ -218,7 +218,7 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, semi=Non
         rot_classes = ['original', '90 rotation', '180 rotation', '270 rotation']
 
     if num_conv_block == 0:
-        net = fm.load_net("RotNet_classification_200")
+        net = fm.load_net("RotNet_classification_200_3_block_net")
 
         print("Evaluating Supervised NIN Classification Task:")
         nin_acc = get_accuracy(testloader, net)
@@ -229,13 +229,15 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, semi=Non
     elif num_conv_block == -1:
         if semi is None:
             raise ValueError('Please provide a value for the argument semi.')
-        print("Evaluating Semi-supervised Learning Experiment:")
         net = fm.load_net("RotNet_rotation_200_4_block_net")
         for num_img in semi:
+            print("Evaluating Semi-supervised Experiment with {} images per class:".format(num_img))
             semi_clf = fm.load_net("Semi-supervised_{}_ConvClassifier_block_2_epoch_100".format(num_img))
             semi_acc = get_accuracy(testloader, net, classifier=semi_clf, conv_block_num=2)
             semi_class_acc = get_class_accuracy(10, testloader, net, classes, classifier=semi_clf, conv_block_num=2)
 
+            print("\n")
+            print("Evaluating supervised NIN Experiment with {} images per class:".format(num_img))
             nin = fm.load_net("Semi-supervised_{}_RotNet_classification_200".format(num_img))
             nin_acc = get_accuracy(testloader, nin, classes)
             nin_class_acc = get_class_accuracy(10, testloader, nin, classes)
@@ -245,6 +247,10 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, semi=Non
 
             acc_dict["Accuracy Supervised NIN {}".format(num_img)] = nin_acc
             acc_dict["Class Accuracy Supervised NIN {}".format(num_img)] = nin_class_acc
+
+            print("\n")
+            print("-" * 80)
+            print("\n")
     else:
         print("Evaluating RotNet model with {} Convolutional Blocks:".format(num_conv_block))
         net = fm.load_net("RotNet_rotation_200_{}_block_net".format(num_conv_block))
