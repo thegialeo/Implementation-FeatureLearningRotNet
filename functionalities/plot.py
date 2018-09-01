@@ -1,4 +1,6 @@
+import os
 import matplotlib.pyplot as plt
+from functionalities import filemanager as fm
 
 
 def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_one=False, max_accuracy=None,
@@ -28,24 +30,24 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
         # plot loss
         for i in range(num_train_sessions):
             epoch_lst = list(range(1, len(loss_lst[i]) + 1))
-            ax[0, 0].plot(epoch_lst, loss_lst[i], label=title_lst[i])
+            ax[0].plot(epoch_lst, loss_lst[i], label=title_lst[i])
 
-        ax[0, 0].set_xlabel('Epoch')
-        ax[0, 0].set_ylabel('Loss')
-        ax[0, 0].set_title('Comparision of Losses')
-        ax[0, 0].grid(True)
-        ax[0, 0].legend()
+        ax[0].set_xlabel('Epoch')
+        ax[0].set_ylabel('Loss')
+        ax[0].set_title('Comparision of Losses')
+        ax[0].grid(True)
+        ax[0].legend()
 
         # plot accuracy
         for i in range(num_train_sessions):
             epoch_lst = list(range(1, len(accuracy_lst[i]) + 1))
-            ax[0, 1].plot(epoch_lst, accuracy_lst[i], label=title_lst[i])
+            ax[1].plot(epoch_lst, accuracy_lst[i], label=title_lst[i])
 
-        ax[0, 1].set_xlabel('Epoch')
-        ax[0, 1].set_ylabel('Accuracy')
-        ax[0, 1].set_title('Comparision of Accuracies')
-        ax[0, 1].grid(True)
-        ax[0, 1].legend()
+        ax[1].set_xlabel('Epoch')
+        ax[1].set_ylabel('Accuracy')
+        ax[1].set_title('Comparision of Accuracies')
+        ax[1].grid(True)
+        ax[1].legend()
 
         filename += 'comparision'
     else:
@@ -128,8 +130,8 @@ def plot_all():
              all_in_one=True)
 
     # plot supervised NIN
-    plot(["Supervised NIN"], super_loss, super_acc, "Supervised NIN")
-    plot(["Supervised NIN"], super_loss, super_acc, "Supervised NIN", all_in_one=True)
+    #plot(["Supervised NIN"], [super_loss], [super_acc], "Supervised NIN")
+    plot(["Supervised NIN"], [super_loss], [super_acc], "Supervised NIN", all_in_one=True)
 
     # plot semi-supervised learning
     plot(["Semi-supervised", "Supervised NIN"], [semi_loss, semi_sup_loss], [semi_acc, semi_sup_acc],
