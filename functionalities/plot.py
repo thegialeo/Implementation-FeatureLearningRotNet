@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import matplotlib.pyplot as plt
 from functionalities import filemanager as fm
 
@@ -112,7 +113,7 @@ def plot_semi(img_per_class, figsize=(15, 10)):
 
     fig, ax = plt.subplots(1, 1, figsize=figsize)
 
-    num_img = 10 * img_per_class
+    num_img = list(10 * np.array(img_per_class))
 
     ax.plot(num_img, acc, label="semi-supervised")
     ax.plot(num_img, nin_acc, label="supervised NIN")
