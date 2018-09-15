@@ -90,7 +90,47 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
     plt.show()
 
 
-def plot_semi(img_per_class, ):
+def plot_semi(img_per_class, figsize=(15, 10)):
+    """
+    Create plots specific for the semi-supervised experiment.
+
+    :param img_per_class: list of number of images per class used for the semi-supervised experiments
+    :param figsize: the size of the generated plot
+    :return:
+    """
+
+    _, semi_acc, _, semi_sup_acc = fm.load_variable("semi-supervised")
+
+    acc = []
+    nin_acc = []
+
+    for acc_lst in semi_acc:
+        acc.append(acc_lst[-1])
+
+    for acc_lst in semi_sup_acc:
+        nin_acc.append(acc_lst[-1])
+
+    fig, ax = plt.subplots(1, 1, figsize=figsize)
+
+    num_img = 10 * img_per_class
+
+    ax.plot(num_img, acc, label="semi-supervised")
+    ax.plot(num_img, nin_acc, label="supervised NIN")
+    ax.set_xlabel('Number of Images used for Training')
+    ax.set_ylabel('Accuracy')
+    ax.set_title('Comparison Semi-supervised and supervised NIN')
+    ax.grid(True)
+    ax.legend()
+
+    plt.tight_layout()
+
+    subdir = "./plot"
+    if not os.path.exists(subdir):
+        os.makedirs(subdir)
+
+    fig.savefig(os.path.join(subdir, "Comparison Semi-supervised and supervised NIN.png"))
+
+    plt.show()
 
 
 def plot_all(semi=None):
