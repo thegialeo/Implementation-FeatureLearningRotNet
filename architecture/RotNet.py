@@ -1,5 +1,6 @@
 import torch.nn as nn
 import math
+import numpy as np
 from architecture import ConvBlock as cb
 from architecture import GlobalAveragePooling as pool
 
@@ -56,6 +57,8 @@ class RotNet(nn.Module):
         self._feature_blocks = nn.ModuleList(blocks)
         self.all_feat_names = ['conv{}'.format(block + 1) for block in range(num_conv_block)] + ['classifier', ]
 
+        self.weight_init()
+
 
     def find_highest_feature(self, out_feat_keys):
         """
@@ -109,14 +112,16 @@ class RotNet(nn.Module):
 
         for module in self.modules():
             if isinstance(module, nn.Conv2d):
-                if module.weight.requires_grad:
-                    n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
-                    module.weight.data.normal_(0, math.sqrt(2.0 / n))
-            elif isinstance(module, nn.BatchNorm2d):
+                n = module.kernel_size[0] * module.kernel_size[1] * module.out_channels
+                module.weight.data.normal_(0, math.sqrt(2.0 / n))
+            elif isinstance(module, nn.BatchNorm1d):
                 if module.weight.requires_grad:
                     module.weight.data.fill_(1)
                 if module.bias.requires_grad:
                     module.bias.data.zero_()
             elif isinstance(module, nn.Linear):
-                if module.bias.requires_grad:
-                    module.bias.data.zero()
+                feat_out = module.out_features
+                std = np.sqrt(2.0 / feat_out)
+                module.weight.data.normal_(0.0, std)
+                if module.bias is not None:
+                    module.bias.data.fill_(0.0)

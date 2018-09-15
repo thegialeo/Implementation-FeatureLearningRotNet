@@ -374,11 +374,11 @@ def train_semi(img_per_class, num_classes, trainset, testset, batch_size, semi_l
         semi_loss_log.append(tmp_loss_log)
         semi_accuracy_log.append(tmp_test_accuracy_log)
 
-        net = RN.RotNet(num_classes=10, num_conv_block=3, add_avg_pool=False)
+        nin_net = RN.RotNet(num_classes=10, num_conv_block=3, add_avg_pool=False)
 
         nin_tmp_loss_log, _, nin_tmp_test_accuracy_log, _, _ = adaptive_learning(super_lr_lst, super_epoch_change,
-            momentum, weight_decay, net, criterion, trainloader, None, testloader, None, None, None, use_paper_metric,
-                False, num_img)
+            momentum, weight_decay, nin_net, criterion, trainloader, None, testloader,
+            use_paper_metric=use_paper_metric, semi=num_img)
 
         super_loss_log.append(nin_tmp_loss_log)
         super_accuracy_log.append(nin_tmp_test_accuracy_log)

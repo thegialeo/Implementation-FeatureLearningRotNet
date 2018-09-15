@@ -239,7 +239,7 @@ def evaluate_all(num_conv_block, testloader, classes, rot_classes=None, semi=Non
             print("\n")
             print("Evaluating supervised NIN Experiment with {} images per class:".format(num_img))
             nin = fm.load_net("Semi-supervised_{}_RotNet_classification_200".format(num_img))
-            nin_acc = get_accuracy(testloader, nin, classes)
+            nin_acc = get_accuracy(testloader, nin)
             nin_class_acc = get_class_accuracy(10, testloader, nin, classes)
 
             acc_dict["Accuracy Semi-supervised {}".format(num_img)] = semi_acc

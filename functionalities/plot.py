@@ -4,7 +4,7 @@ from functionalities import filemanager as fm
 
 
 def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_one=False, max_accuracy=None,
-         best_epoch=None):
+         best_epoch=None, history=False):
     """
     Create separate subplots for every loss and accuracy in the provided lists against the number of training epochs.
     The subplots will have the corresponding titles from title_lst.
@@ -19,6 +19,7 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
     :param all_in_one: If True, then all_in_one plot option is enabled. Default: False
     :param max_accuracy: If provided with best_epoch, the point (best_epoch, max_accuracy) will be additionally plotted
     :param best_epoch: If provided with max_accuracy, the point (best_epoch, max_accuracy) will be additionally plotted
+    :param history: Change titles plots from comparison to history
     :return: None
     """
 
@@ -34,7 +35,10 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
 
         ax[0].set_xlabel('Epoch')
         ax[0].set_ylabel('Loss')
-        ax[0].set_title('Comparision of Losses')
+        if history:
+            ax[0].set_title('History of Loss')
+        else:
+            ax[0].set_title('Comparision of Losses')
         ax[0].grid(True)
         ax[0].legend()
 
@@ -45,11 +49,14 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
 
         ax[1].set_xlabel('Epoch')
         ax[1].set_ylabel('Accuracy')
-        ax[1].set_title('Comparision of Accuracies')
+        if history:
+            ax[1].set_title('History of Accuracies')
+        else:
+            ax[1].set_title('Comparision of Accuracies')
         ax[1].grid(True)
         ax[1].legend()
 
-        filename += 'comparision'
+        filename += '_comparison'
     else:
         fig, ax = plt.subplots(num_train_sessions, 2, figsize=figsize)
 
@@ -83,10 +90,14 @@ def plot(title_lst, loss_lst, accuracy_lst, filename, figsize=(15, 10), all_in_o
     plt.show()
 
 
-def plot_all():
+def plot_semi(img_per_class, ):
+
+
+def plot_all(semi=None):
     """
     Create plots for loss and accuracies history of all experiments.
 
+    :param semi: list of number of images per class used for the semi-supervised experiments (need for correct caption)
     :return: None
     """
 
@@ -131,10 +142,15 @@ def plot_all():
 
     # plot supervised NIN
     #plot(["Supervised NIN"], [super_loss], [super_acc], "Supervised NIN")
-    plot(["Supervised NIN"], [super_loss], [super_acc], "Supervised NIN", all_in_one=True)
+    plot(["Supervised NIN"], [super_loss], [super_acc], "Supervised NIN", all_in_one=True, history=True)
 
     # plot semi-supervised learning
-    plot(["Semi-supervised", "Supervised NIN"], [semi_loss, semi_sup_loss], [semi_acc, semi_sup_acc],
-         "Semi-supervised Learning")
-    plot(["Semi-supervised", "Supervised NIN"], [semi_loss, semi_sup_loss], [semi_acc, semi_sup_acc],
-         "Semi-supervised Learning", all_in_one=True)
+    if semi is not None:
+        for i, num_img in enumerate(semi):
+            semi_titles = ["Semi-supervised {} images per class".format(num_img),
+                           "Supervised NIN {} images per class".format(num_img)]
+            semi_filename = "Semi-supervised Learning {}".format(num_img)
+
+            plot(semi_titles, [semi_loss[i], semi_sup_loss[i]], [semi_acc[i], semi_sup_acc[i]], semi_filename)
+            plot(semi_titles, [semi_loss[i], semi_sup_loss[i]], [semi_acc[i], semi_sup_acc[i]], semi_filename,
+                 all_in_one=True)
