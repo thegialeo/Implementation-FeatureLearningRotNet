@@ -96,7 +96,7 @@ def plot_semi(img_per_class, figsize=(15, 10)):
 
     :param img_per_class: list of number of images per class used for the semi-supervised experiments
     :param figsize: the size of the generated plot
-    :return:
+    :return: None
     """
 
     _, semi_acc, _, semi_sup_acc = fm.load_variable("semi-supervised")
@@ -194,3 +194,6 @@ def plot_all(semi=None):
             plot(semi_titles, [semi_loss[i], semi_sup_loss[i]], [semi_acc[i], semi_sup_acc[i]], semi_filename)
             plot(semi_titles, [semi_loss[i], semi_sup_loss[i]], [semi_acc[i], semi_sup_acc[i]], semi_filename,
                  all_in_one=True)
+
+        # plot semi-supervised and supervised NIN
+        plot_semi(semi)
