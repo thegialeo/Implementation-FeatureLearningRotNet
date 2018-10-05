@@ -3,6 +3,7 @@ import pickle
 import torch
 
 
+
 def save_variable(var_list, filename):
     """
     Takes a list of variables and save them in a .pkl file.
